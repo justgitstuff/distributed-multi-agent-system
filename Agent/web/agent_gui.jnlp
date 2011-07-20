@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<jnlp codebase="http://tomcat.examer.de:80/Agent/" href="agent_gui.jnlp" spec="1.0+">
+  <information>
+  <title>Needed GUI Libs</title>
+  <vendor>Eclipse</vendor>
+  <description>Needed GUI Libs</description>
+  <description kind="short">Needed GUI Libs</description>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se initial-heap-size="128m" max-heap-size="384m" version="1.5+"/>
+    <jar href="lib/org.eclipse.draw2d_3.5.1.v20090813-1341.jar"/>
+    <jar href="lib/org.eclipse.zest.core_1.1.0.v20090504-1850.jar"/>
+    <jar href="lib/org.eclipse.zest.layouts_1.1.0.v20090504-1850.jar"/>
+    <jar href="lib/org.eclipse.core.commands_3.5.0.I20090525-2000.jar"/>
+    <jar href="lib/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar"/>
+    <jar href="lib/org.eclipse.jface_3.5.1.M20090826-0800.jar"/>
+    <jar href="lib/org.eclipse.osgi_3.5.1.R35x_v20090827.jar"/>
+    <jar href="lib/org.eclipse.ui.workbench_3.5.1.M20090826-0800a.jar"/>
+  </resources>
+
+<component-desc/>
+</jnlp>

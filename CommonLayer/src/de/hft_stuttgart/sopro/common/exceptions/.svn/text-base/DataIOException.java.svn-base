@@ -1,0 +1,29 @@
+/*
+ * $LastChangedRevision$
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $HeadURL$
+ * $Id$
+ */
+package de.hft_stuttgart.sopro.common.exceptions;
+
+/**
+ * 
+ * @author Annemarie Meissner
+ * 
+ */
+public class DataIOException extends Exception {
+	/**
+	 * The default serial version UID.
+	 */
+	private static final long serialVersionUID = 5675047442032548086L;
+
+	public DataIOException() {
+		super();
+	}
+
+	public DataIOException(String message) {
+		super(message);
+	}
+
+}

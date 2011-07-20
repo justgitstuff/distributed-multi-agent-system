@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart
+END
+RoundProgressBar.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/845/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/RoundProgressBar.java
+END
+ProjectInformationStatistics.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/886/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/ProjectInformationStatistics.java
+END
+ResourceAllocationPlan.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/916/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/ResourceAllocationPlan.java
+END
+TotalCashValueLineChart.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/916/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/TotalCashValueLineChart.java
+END
+IChart.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/845/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/IChart.java
+END
+ResourceJobPlan.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/chart/ResourceJobPlan.java
+END

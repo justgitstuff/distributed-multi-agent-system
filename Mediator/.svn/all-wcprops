@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/524/branches/Mediator
+END
+.classpath
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/518/branches/Mediator/.classpath
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/80/branches/Mediator/.project
+END
+build.properties
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/398/branches/Mediator/build.properties
+END
+build.xml
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/853/branches/Mediator/build.xml
+END

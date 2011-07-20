@@ -1,0 +1,276 @@
+package de.hft_stuttgart.sopro.agent.gui.view;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
+
+import de.hft_stuttgart.sopro.agent.gui.AmpManager;
+import de.hft_stuttgart.sopro.agent.gui.ViewsEnum;
+
+/**
+ * This view provides the user the choice to join a project.
+ * 
+ * @author Matthias Huber - MatthewHuber@web.de
+ */
+// TODO: rework current filter implementation.
+public class ProjectView {
+
+	/**
+	 * The shell of the user interface.
+	 */
+	private Shell shell;
+
+	/**
+	 * The composite which holds all widgets of the view.
+	 */
+	private Composite composite;
+
+	/**
+	 * This list contains all available projects depending on the filter
+	 * (all/none/one).
+	 */
+	private List negotiations;
+
+	/**
+	 * The number of columns of the used {@link GridLayout}.
+	 */
+	private static final int numberOfColumns = 5;
+
+	private String[] projects = { "Project 1 (0/2)", "Project 2 (1/2)", "Project 3 (1/2)", "Project 4 (0/2)", "Project 5 (1/2)", "Project 6 (1/2)", "Project 7 (0/2)" };
+	private Button all;
+	private Button none;
+	private Button one;
+	private Button join;
+
+	public ProjectView(Shell shell) {
+		this.shell = shell;
+	}
+
+	public void show() {
+
+		composite = new Composite(shell, SWT.BORDER);
+		composite.setSize(shell.getSize().x, shell.getSize().y);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		composite.setLayout(gridLayout);
+
+		// top area
+		createTopArea();
+		
+		// bottom area
+		createBottomArea();
+		
+		// check button states
+		updateButtons();
+	}
+
+
+	private void createTopArea() {
+		Composite topArea = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		GridLayout glTopArea = new GridLayout(numberOfColumns, true);
+		glTopArea.verticalSpacing = 5;
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.78);
+		topArea.setLayout(glTopArea);
+		topArea.setLayoutData(gridData);
+
+		// Filter: all
+		all = new Button(topArea, SWT.TOGGLE);
+		all.setText("All");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		all.setLayoutData(gridData);
+		all.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button widget = (Button) e.widget;
+				if (widget.getSelection()) {
+					clearList();
+					one.setSelection(false);
+					none.setSelection(false);
+					for (String projectName : projects) {
+						negotiations.add(projectName);
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		// Filter: none
+		none = new Button(topArea, SWT.TOGGLE);
+		none.setText("None");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		none.setLayoutData(gridData);
+
+		none.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button widget = (Button) e.widget;
+				if (widget.getSelection()) {
+					clearList();
+					one.setSelection(false);
+					all.setSelection(false);
+					for (String projectName : projects) {
+						if (projectName.contains("0/2)")) {
+							negotiations.add(projectName);
+						}
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		// Filter: one
+		one = new Button(topArea, SWT.TOGGLE);
+		one.setText("One");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		one.setLayoutData(gridData);
+
+		one.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button widget = (Button) e.widget;
+				if (widget.getSelection()) {
+					clearList();
+					all.setSelection(false);
+					none.setSelection(false);
+					for (String projectName : projects) {
+						if (projectName.contains("1/2)")) {
+							negotiations.add(projectName);
+						}
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		new Label(topArea, SWT.NONE).setVisible(false);
+		new Label(topArea, SWT.NONE).setVisible(false);
+
+		negotiations = new List(topArea, SWT.BORDER | SWT.V_SCROLL);
+
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = numberOfColumns - 2;
+		gridData.verticalSpan = 2;
+		gridData.heightHint = 80;
+		// TODO: change to relative height (matthias)
+		gridData.heightHint = 200;
+		negotiations.setLayoutData(gridData);
+
+		//add projects
+		negotiations.setItems(getProjects());
+		
+		negotiations.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				updateButtons();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		Label information = new Label(topArea, SWT.NONE);
+		information.setText("Job information");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		information.setLayoutData(gridData);
+	}
+
+	private void createBottomArea() {
+		Composite bottomArea = new Composite(composite, SWT.BORDER);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.heightHint = (int) (composite.getClientArea().height * 0.1);
+		bottomArea.setLayout(new GridLayout(numberOfColumns, true));
+		bottomArea.setLayoutData(gd);
+
+		// 3 empty labels => currently it's not possible to define empty grid
+		// cells
+		new Label(bottomArea, SWT.NONE).setVisible(false);
+		new Label(bottomArea, SWT.NONE).setVisible(false);
+		new Label(bottomArea, SWT.NONE).setVisible(false);
+
+		// Back Button
+		Button back = new Button(bottomArea, SWT.PUSH);
+		back.setText("Back");
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		back.setLayoutData(gd);
+
+		back.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				AmpManager.getAmp().switchToView(ViewsEnum.MEDIATORVIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		// Join Button
+		join = new Button(bottomArea, SWT.PUSH);
+		join.setText("Join");
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		join.setLayoutData(gd);
+
+		join.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				AmpManager.getAmp().switchToView(ViewsEnum.NEGOTIATIONVIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		// enable/disable filter buttons
+		all.setSelection(true);
+		none.setSelection(false);
+		one.setSelection(false);
+
+		// fill with all jobs because of "all" is set a initial filter
+//		for (String projectName : projects) {
+//			negotiations.add(projectName);
+//		}
+	}
+
+	private String[] getProjects() {
+
+		return projects;
+	}
+
+	private boolean isNegotiationSelected() {
+		return negotiations.getSelectionIndex() != -1;
+
+	}
+
+	private void updateButtons() {
+		join.setEnabled(isNegotiationSelected());
+	}
+
+	private void clearList() {
+		negotiations.removeAll();
+	}
+}

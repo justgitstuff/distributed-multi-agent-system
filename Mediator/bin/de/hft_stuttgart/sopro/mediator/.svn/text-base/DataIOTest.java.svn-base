@@ -1,0 +1,103 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-02 19:28:13 +0100 (Mo, 02 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/test/de/hft_stuttgart/sopro/common
+ * /data/DataIOTest.java $ $Id: DataIOTest.java 416 2009-11-19 12:45:22Z
+ * annemarie $
+ */
+package de.hft_stuttgart.sopro.mediator;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.hft_stuttgart.sopro.common.exceptions.AgentIndexOutOfBoundsException;
+import de.hft_stuttgart.sopro.common.exceptions.PaymentDatatNotFoundException;
+import de.hft_stuttgart.sopro.common.exceptions.ProjectNotFoundException;
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.project.ProjectComposition;
+import de.hft_stuttgart.sopro.mediator.data.DataIO;
+
+/**
+ * @author Annemarie Meissner
+ * @author sdegiorgi@gmail.com DataIOTest, maybe useful as a template (included
+ *         hooks)
+ */
+public class DataIOTest {
+	
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+	}
+
+	@Before
+	public void setUp() {
+	}
+
+	@After
+	public void tearDown() {
+	}
+
+	/**
+	 * Tests if loading of a project works ok.
+	 */
+	@Test
+	public void testLoadOneProject() {
+		DataIO dataIO = new DataIO();
+		String fileDir  = "J30";
+		String fileName = "J302_1.RCP";
+		IProject project = dataIO.loadProblemData(dataIO.getProblemDataPath()
+				+ fileDir + File.separator + fileName);
+		//For those who want to see the output
+		//System.out.println("testing one project: " + this.getProblemDataPath() + fileDir + File.separator + fileName);
+		assertEquals(project.getNumberOfJobs(), 32);
+	}
+
+
+	/**
+	 * Tests if loading of all projects works ok.
+	 */
+	@Test
+	public void testLoadAllProject() {
+
+		DataIO dataIO = new DataIO();
+		String filepath = dataIO.getProblemDataPath();
+		//For those who want to see the output --> uncomment the system.out.pintln statements
+		//System.out.println("testing all projects: " + filepath);
+		ProjectComposition allProject = dataIO.loadAllProblemData(filepath);
+		assertEquals(allProject.getNumberOfProjects(), 36);
+
+		for (int i = 0; i < allProject.getNumberOfProjects(); i++) {
+			try {
+				//System.out.println("Project name: " + allProject.getProjectByIndex(i).getProjectName());
+				int numOfJobs = allProject.getProjectByIndex(i).getNumberOfJobs();
+				//System.out.println("Number of jobs: " + numOfJobs);
+				List<Double> payment1 = allProject.getPaymentDataOfProject(allProject.getProjectByIndex(i).getNumberOfJobs(), 0);
+				List<Double> payment2 = allProject.getPaymentDataOfProject(allProject.getProjectByIndex(i).getNumberOfJobs(), 1);
+				//System.out.println("Number of Payment agent 1: " + payment1.size());
+				//System.out.println("Number of Payment agent 2: " + payment2.size());
+				assertEquals(numOfJobs, payment1.size());
+				assertEquals(numOfJobs, payment2.size());
+			} catch (ProjectNotFoundException e) {
+				e.printStackTrace();
+			} catch (AgentIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			} catch (PaymentDatatNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+}

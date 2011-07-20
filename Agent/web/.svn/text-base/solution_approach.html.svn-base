@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- InstanceBegin template="/Templates/content.dwt" codeOutsideHTMLIsLocked="false" -->
+<!-- DW6 -->
+<head>
+<link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico">
+<!-- Copyright 2005 Macromedia, Inc. All rights reserved. -->
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>AMP - Ant-based Multi-Agent Project-Scheduling [Software Project :: Masters Course :: HFT Stuttgart :: Winter Term 2009 :: Prof. Dr. Jörg Homberger]</title>
+<!-- InstanceEndEditable -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="amp_green.css" type="text/css">
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr class="bgrow1">
+    <td width="382" colspan="3" rowspan="2"><a href="index.html"><img src="logo_green.png" alt="AMP Logo" width="382" height="101" border="0"></a></td>
+    <td width="378" height="50" colspan="3" id="logo" valign="bottom" align="center" nowrap>AMP</td>
+    <td width="100%">&nbsp;</td>
+  </tr>
+
+  <tr class="bgrow1">
+    <td height="51" colspan="3" id="tagline" valign="top" align="center">Ant-based Multi-Agent Project-Scheduling</td>
+	<td width="100%">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td colspan="7"><img src="mm_spacer.gif" alt="" width="1" height="2" border="0"></td>
+  </tr>
+
+  <tr>
+    <td colspan="7" class="bgrow3" background="mm_dashed_line.gif"><img src="mm_dashed_line.gif" alt="line decor" width="4" height="3" border="0"></td>
+  </tr>
+
+  <tr class="bgrow3">
+  	<td colspan="7" id="dateformat" height="20">&nbsp;&nbsp;<!-- InstanceBeginEditable name="Edit_Top" -->A Software Project by Students of the Masters Course Software Technology Winter Term 2009<!-- InstanceEndEditable --></td>
+  </tr>
+  <tr>
+    <td colspan="7" class="bgrow3" background="mm_dashed_line.gif"><img src="mm_dashed_line.gif" alt="line decor" width="4" height="3" border="0"></td>
+  </tr>
+
+  <tr>
+    <td colspan="7" class="bgrow2"><img src="mm_spacer.gif" alt="" width="1" height="2" border="0"></td>
+  </tr>
+
+ <tr>
+    <td width="165" valign="top" class="bgrow2"><!-- InstanceBeginEditable name="Edit_Menu" -->
+      <table border="0" cellspacing="0" cellpadding="0" width="165" id="navigation">
+        <tr>
+          <td width="165">&nbsp;<br>
+            &nbsp;<br></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="index.html" class="navText">Home</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="what_is_amp.html" class="navText">What is AMP ?</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="problem_description.html" class="navText">Problem Description</a></td>
+        </tr>
+        <tr>
+          <td width="165" align="right"><a href="solution_approach.html" class="navText">Solution Approach</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="benchmark.html" class="navText">Benchmark</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="download.html" class="navText">Download</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="documentation.html" class="navText">Documentation</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="troubleshooting.html" class="navText">Troubleshooting</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="project_team.html" class="navText">Project Team</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="imprint.html" class="navText">Imprint</a></td>
+        </tr>
+        <tr>
+          <td width="165"><a href="contact.html" class="navText">Contact</a></td>
+        </tr>
+      </table>
+    <!-- InstanceEndEditable --> <br>
+  	&nbsp;<br>
+  	&nbsp;<br>
+  	&nbsp;<br> 	</td>
+    <td width="50"><img src="mm_spacer.gif" alt="" width="50" height="1" border="0"></td>
+    <td width="530" colspan="2" valign="top"><img src="mm_spacer.gif" alt="" width="530" height="1" border="0"><br>
+	&nbsp;<br>
+	&nbsp;<br>
+	<!-- InstanceBeginEditable name="Edit_Content" -->
+	<table border="0" cellspacing="0" cellpadding="0" width="530">
+      <tr>
+        <td class="pageName">Solution Approach</td>
+      </tr>
+      <tr>
+        <td class="bodyText"><p>In our solution approach, we will add a third, independentagent, referenced to as the 'Mediator'.</p>
+          <p><strong>Importance of Mediator:</strong></p>
+          <p>So,  here comes a Mediator into picture, who can supervise the two agents as  a unbiased coordinaor. Till this project there was no mediator to coordinate the  jobs of the the agents. So, there used to be a conflict between the  agents for the sequence of jobs leading to a confusion of their  corresponding total cash value.</p>
+          <p>The  mediator will only know basic information about a project like the  name, number of jobs and the number of resources involved. Based on  this information, the mediator will then create a list of random  proposals.</p>
+          <p><strong>A proposal in this context is one random valid arrangement  of jobs for a given project. </strong></p>
+          <p>The mediator does not know any payment  information, therefore it creates unbiased proposals. This list of  possible proposals will be communicated to the agents. The agents will  internally and privately add the payment information to the proposals.  Using the payment information the agents are now able to rank the  proposals. This will result in a “hit list”, a ranking of which  proposals an agent will favor and which one it will not like.This hit  list, not containing any financial information is then returned to the  mediator.</p>
+          <p>Until  now, the mediator would take a look at both hit lists and look for  matches. If no match is found, it would randomly generate new proposals  and continue with this process until a solution is found.</p>
+          <p>This  process will eventually come up with a solution, but unfortunately this  solution will not be the overall best solution for both agents. For  example see the graph below in the <strong>time</strong> and <strong>Resource availability</strong> graph</p>
+          <p align="center"><img src="_wsb_503x325_first_schedule.png" alt="First Schedule" width="503" height="325"></p>
+          <p>Now  if we calculate the cash value of job2 of an agent, it will be as in  the figure below. The two graphs below show the cash value for the same  job if performed at different time.</p>
+          <p align="center"><img src="_wsb_470x257_cash_value_calculation.png" alt="Cash Value Calculation" width="470" height="257"></p>
+          <p>So,  from the above picture it's clear that the concerned agent would like  to prepone the job2.This will lead to a new job sequence graph(shown  below).</p>
+          <p align="center"><img src="_wsb_494x342_second_schedule.png" alt="Second Schedule" width="494" height="342"></p>
+          <p>Now  if we take the above calculation into account the total cash value of  agent B will be less by 34 € just by preponing one job. It can be a  huge amount if we get similar(or more) differences for more jobs.</p>
+          <p><strong>So, the jobs have to be performed in the respective sequence.</strong></p>
+          <p><strong>What is an Ant-based algorithm?</strong></p>
+          <p><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">To  understand the algorithm, we have to understand the ant's behaviour.  <strong>Pheromone</strong> are the typical navigators of the ants. When the ants move,  they leave a trace of pheromone on the path.</span></span></span></span></p>
+          <p><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">The ants following the  path can easily find their way on that path due to the pheromone trace.  So, the more ants move on the same path, the stronger will be the  pheromone trace. The ants moving in the similar direction will not  have much confusion finding their way. </span></span></span></span></p>
+          <p>Let’s have an example:</p>
+          <p>Let  there be a collection of ants at a point A. Also, let there be a source  of food at a point B. Between these two points there exist obstacles  that avoid a direct connection.</p>
+          <p align="center"><img src="_wsb_492x183_ANT1.png" alt="Ant1" width="492" height="183"></p>
+          <p>The ants will start moving toward point B without knowing a good way  yet. Imagine living in a new town where you explore the city without  knowing how to get from one place to the other. When coming across an  obstacle, some ants will decide to pass the obstacle one way, some will  decide to pass the obstacle another way. This process will repeat until  the first ant will arrive at point B.</p>
+          <p align="center"><img src="_wsb_483x203_ANT2.png" alt="Ant2" width="483" height="203"></p>
+          <p>The ant will grab some food and start moving back to point A the same  way it came before. How does it remember the way? The trick is a scent  of pheromones released by the ant that this ant and all others can  sense. This can be compared to the tale of Hansel and Gretel where they  left breadcrumbs on the way to find back.</p>
+          <p>This ant is following its own “breadcrumbs” – and additionally releasing pheromone scent on its way back to point A.</p>
+          <p align="center"><img src="_wsb_486x215_ANT3.png" alt="Ant3" width="486" height="215"></p>
+          <p>The other ants will by highest chance walk the path with the strongest  pheromone scent. As more and more ants walk the same path – the path  which has proved to be the most efficient way between these two points  – the scent grows stronger and stronger until you have almost all ants  walking the same path in the end.<br>
+          </p>
+          <p align="center"><img src="_wsb_500x233_ANT4.png" alt="Ant4" width="500" height="233"></p>
+          <p><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">A  similar strategy is also implemented in this project. There should be a  good basis of orientation for the agents. the mediator coordinates the  agents. So, t</span></span></span></span><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">he  mediator maintains a pheromone matrix to show the path for the future  agents. When an agent appraoches the mediator, mediator generates  possible proposals based on the till now updated pheromone matrix.  Every time a best sequence of jobs in a scenario is found, the mediator  updates its pheromone matrix. So, it becomes easy for the mediator to  generate another set of possible proposalss based on the (till now  updated) pheromone matrix for the  next scenario.</span></span></span></span></p>
+          <p><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">In  AMP we assume, the collaborating companies(Agents) are the clients. The  mediator generates a possible pemutation of jobs and the agents vote  their favorable permutation based on the total cash value. In this AMP  project  BORDA voting algoritm  is applied to optimise the solution.</span></span></span></span></p>
+          <p><span lang="DE"><span lang="DE"><span lang="DE"><span lang="DE">On the other end, the mediator maintains a pheromone matrix to show  the best sequence till that time. </span></span></span></span></p></td>
+      </tr>
+    </table>
+	<!-- InstanceEndEditable --> <br>
+	&nbsp;<br>	</td>
+    <td width="50"><img src="mm_spacer.gif" alt="" width="50" height="1" border="0"></td>
+        <td width="190" valign="top"><br>
+		&nbsp;<br>
+		<table border="0" cellspacing="0" cellpadding="0" width="190" id="leftcol">
+
+	   <tr>
+       <td width="10"><img src="mm_spacer.gif" alt="" width="10" height="1" border="0"></td>
+		<td width="170" valign="top" class="smallText"><br>
+			<p><span class="subHeader"><a href="agent.jnlp">Launch Agent</a></span><br>
+			Direct link to launch the Client Software to participate in a scheduling.  Please make sure you read the  Requirements Section in the <a href="documentation.html" class="smallText">Documentation</a>.</p>
+
+			<p><span class="subHeader"><a href="troubleshooting.html">Troubleshooting</a></span><br>
+			Here you can find help if you encounter any problems, even though your system complies with the requirements.<br>
+		    </p>
+
+			<p><span class="subHeader"><a href="contact.html">Contact</a></span><br>
+Get in touch with the project team and the supervising professor.</p>
+			<p><span class="subHeader"><a href="http://www.hft-stuttgart.de/Softwaretechnology" target="_blank">Stuttgart University of Applied Sciences</a></span><br>
+			Software Technology<br>
+			  <br>
+			    <a href="http://www.hft-stuttgart.de/Softwaretechnology" target="_blank"><img src="hft.png" alt="HFT Stuttgart" width="190" height="89" border="0"></a><br>
+			&nbsp;<br>          
+			</p>
+		  </td>
+         <td width="10">&nbsp;</td>
+        </tr>
+      </table>	</td>
+	<td width="100%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="165">&nbsp;</td>
+    <td width="50">&nbsp;</td>
+    <td width="167">&nbsp;</td>
+    <td width="138">&nbsp;</td>
+    <td width="50">&nbsp;</td>
+    <td width="190">&nbsp;</td>
+	<td width="100%">&nbsp;</td>
+  </tr>
+</table>
+</body>
+<!-- InstanceEnd --></html>

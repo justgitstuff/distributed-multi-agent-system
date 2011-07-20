@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/467/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions
+END
+DataIOException.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/55/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/DataIOException.java
+END
+PerformAggregationException.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/467/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/PerformAggregationException.java
+END
+ProjectNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/341/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/ProjectNotFoundException.java
+END
+ResourceNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/134/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/ResourceNotFoundException.java
+END
+NotImplementedException.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/341/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/NotImplementedException.java
+END
+JobInPermutationNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/341/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/JobInPermutationNotFoundException.java
+END
+PaymentDatatNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/381/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/PaymentDatatNotFoundException.java
+END
+StarttimeNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/309/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/StarttimeNotFoundException.java
+END
+ProposalNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/341/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/ProposalNotFoundException.java
+END
+AgentIndexOutOfBoundsException.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/381/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/exceptions/AgentIndexOutOfBoundsException.java
+END

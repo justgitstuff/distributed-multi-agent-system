@@ -1,0 +1,17 @@
+/*
+ * $LastChangedRevision$
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $HeadURL$
+ * $Id$
+ */
+package de.hft_stuttgart.sopro.common.voting;
+
+/**
+ * @author Annemarie Meissner
+ * @author Eduard Tudenhoefner
+ * 
+ */
+public enum VotingAlgorithmEnum {
+	SCORING, BORDA, PLURALITY, APPROVAL, COPELAND;
+}

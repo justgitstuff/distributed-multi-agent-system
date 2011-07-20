@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/818/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms
+END
+ApprovalVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/734/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/ApprovalVotingAlgorithm.java
+END
+ScoringVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/734/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/ScoringVotingAlgorithm.java
+END
+CopelandVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/734/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/CopelandVotingAlgorithm.java
+END
+PluralityVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/734/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/PluralityVotingAlgorithm.java
+END
+BordaVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/818/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/BordaVotingAlgorithm.java
+END
+IVotingAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/734/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/algorithms/IVotingAlgorithm.java
+END

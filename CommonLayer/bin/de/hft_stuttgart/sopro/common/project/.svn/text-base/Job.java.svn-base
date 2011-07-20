@@ -1,0 +1,382 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-08 19:34:06 +0100 (So, 08 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/project/Job.java
+ * $ $Id$
+ */
+package de.hft_stuttgart.sopro.common.project;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import de.hft_stuttgart.sopro.common.exceptions.ResourceNotFoundException;
+
+/**
+ * A Object of this class is one job of the project
+ * 
+ * @author Annemarie Meissner
+ * @author Eduard Tudenhoefner - nastra@gmx.net
+ * @version 1.0
+ */
+public class Job implements IJob {
+
+	/**
+	 * The generated serial version UID.
+	 */
+	private static final long serialVersionUID = 1254454833888634972L;
+
+	/**
+	 * The job number in the whole project.
+	 */
+	private int jobNumber = 0;
+
+	/**
+	 * duration of the job per period
+	 */
+	private int duration = 0;
+
+	/**
+	 * The list of successors of this {@link IJob}.
+	 */
+	private List<IJob> successors = new ArrayList<IJob>();
+
+	/**
+	 * The list of predecesors of this {@link IJob}.
+	 */
+	private List<IJob> predecessors = new ArrayList<IJob>();
+
+	/**
+	 * The payment of the job
+	 */
+	private double payment = 0.0;
+
+	/**
+	 * Contains the units of each resource per period
+	 */
+	private int[] resources = null;
+
+	/**
+	 * start times of a job in the project for each resource
+	 */
+	private int[] startTimes = null;
+
+	/**
+	 * The id of the agent to which this job belongs to.
+	 */
+	private int agentId = 0;
+
+	/**
+	 * The id of the project to which this job belongs to.
+	 */
+	private int projectId = 0;
+
+	/**
+	 * Constructor taking the jobNumber as parameter.
+	 * 
+	 * @param jobNumber
+	 *            The job number to set.
+	 */
+	public Job(int jobNumber) {
+		this.jobNumber = jobNumber;
+	}
+
+	/**
+	 * Constructor taking the jobNumber and the projectId as parameter.
+	 * 
+	 * @param jobNumber
+	 *            The job number to set.
+	 * @param projectId
+	 *            The project id to set.
+	 */
+	public Job(int jobNumber, int projectId) {
+		this.jobNumber = jobNumber;
+		this.projectId = projectId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + agentId;
+		result = prime * result + duration;
+		result = prime * result + jobNumber;
+		long temp;
+		temp = Double.doubleToLongBits(payment);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((predecessors == null) ? 0 : predecessors.hashCode());
+		result = prime * result + projectId;
+		result = prime * result + Arrays.hashCode(resources);
+		result = prime * result + Arrays.hashCode(startTimes);
+		result = prime * result + ((successors == null) ? 0 : successors.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Job other = (Job) obj;
+		if (agentId != other.agentId)
+			return false;
+		if (duration != other.duration)
+			return false;
+		if (jobNumber != other.jobNumber)
+			return false;
+		if (Double.doubleToLongBits(payment) != Double.doubleToLongBits(other.payment))
+			return false;
+		if (predecessors == null) {
+			if (other.predecessors != null)
+				return false;
+		} else if (!predecessors.equals(other.predecessors))
+			return false;
+		if (projectId != other.projectId)
+			return false;
+		if (!Arrays.equals(resources, other.resources))
+			return false;
+		if (!Arrays.equals(startTimes, other.startTimes))
+			return false;
+		if (successors == null) {
+			if (other.successors != null)
+				return false;
+		} else if (!successors.equals(other.successors))
+			return false;
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IJob clone() {
+		IJob clone = new Job(jobNumber);
+		clone.setDuration(this.duration);
+		clone.setAgentId(this.agentId);
+		clone.setPayment(this.payment);
+		clone.setProjectId(this.projectId);
+		try {
+			if (this.resources != null) {
+				clone.setResources(this.resources.clone());
+				for (int i = 0; i < clone.getResources().length; i++) {
+					clone.adjustStartTimeForIndex(this.retrieveStartTimeFromIndex(i), i);
+				}
+			}
+
+			clone.setSuccessors(this.successors);
+			clone.setPredecessors(this.predecessors);
+		} catch (ResourceNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return clone;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getDuration() {
+		return duration;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public double getPayment() {
+		return payment;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setPayment(double payment) {
+		this.payment = payment;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int[] getResources() {
+		if (null != resources) {
+			return resources.clone();
+		}
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int retrieveResourceFromIndex(int resIndex) throws ResourceNotFoundException {
+		if (null != resources && resIndex >= 0 && resIndex < this.resources.length) {
+			return this.resources[resIndex];
+		}
+
+		throw new ResourceNotFoundException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int retrieveEndTimeFromIndex(int resIndex) throws ResourceNotFoundException {
+		if (null != resources && null != startTimes && resIndex >= 0 && resIndex < this.resources.length) {
+			return this.startTimes[resIndex] + this.duration;
+		}
+
+		throw new ResourceNotFoundException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int retrieveStartTimeFromIndex(int resIndex) throws ResourceNotFoundException {
+		if (null != resources && null != startTimes && resIndex >= 0 && resIndex < this.resources.length) {
+			return this.startTimes[resIndex];
+		}
+
+		throw new ResourceNotFoundException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void adjustStartTimeForIndex(int starttime, int resIndex) throws ResourceNotFoundException {
+		if (null != resources && null != this.startTimes && resIndex >= 0 && resIndex < resources.length) {
+			this.startTimes[resIndex] = starttime;
+			return;
+		}
+
+		throw new ResourceNotFoundException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setResources(int[] resources) {
+		if (null != resources) {
+			this.resources = resources.clone();
+
+			// for each resource there must be one starttime
+			// --> initiate the starttime array with the same length as the
+			// resource
+			// array
+			this.startTimes = new int[this.resources.length];
+		} else {
+			this.resources = null;
+			this.startTimes = null;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getAgentId() {
+		return agentId;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAgentId(int agentId) {
+		this.agentId = agentId;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getProjectId() {
+		return projectId;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setSuccessors(List<IJob> successors) {
+		this.successors = successors;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setPredecessors(List<IJob> predecessors) {
+		this.predecessors = predecessors;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getJobNumber() {
+		return jobNumber;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setJobNumber(int jobNumber) {
+		this.jobNumber = jobNumber;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addPredecessor(IJob predecessor) {
+		this.predecessors.add(predecessor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addSuccessor(IJob successor) {
+		this.successors.add(successor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<IJob> getPredecessors() {
+		return Collections.unmodifiableList(this.predecessors);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<IJob> getSuccessors() {
+		return Collections.unmodifiableList(this.successors);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int[] getStartTimes() {
+		if (null != startTimes) {
+			return startTimes.clone();
+		}
+		return null;
+	}
+
+}

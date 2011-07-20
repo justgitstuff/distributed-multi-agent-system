@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/844/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter
+END
+DoubleConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/506/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/DoubleConverter.java
+END
+JobConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/672/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/JobConverter.java
+END
+ListConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/684/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ListConverter.java
+END
+ProposalConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/672/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ProposalConverter.java
+END
+ObjectCloner.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/844/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ObjectCloner.java
+END
+ProjectUpdater.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/844/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ProjectUpdater.java
+END
+ProposalCompositionConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/684/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ProposalCompositionConverter.java
+END
+ProjectConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/543/branches/Agent/src/de/hft_stuttgart/sopro/agent/converter/ProjectConverter.java
+END

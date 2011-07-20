@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/800/branches/Mediator/test/de/hft_stuttgart/sopro/mediator
+END
+ProposalGeneratorPrimitiveTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/718/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/ProposalGeneratorPrimitiveTest.java
+END
+DataIOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/511/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/DataIOTest.java
+END
+JobConverterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/544/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/JobConverterTest.java
+END
+IdGeneratorTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/490/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/IdGeneratorTest.java
+END
+MediatorTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/817/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/MediatorTest.java
+END
+ProposalConverterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/545/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/ProposalConverterTest.java
+END
+ProposalGeneratorAdvancedAdditionTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/718/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/ProposalGeneratorAdvancedAdditionTest.java
+END
+AllTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/800/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/AllTests.java
+END
+ProposalCompositionConverterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/549/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/ProposalCompositionConverterTest.java
+END
+CapacityStarttimesTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/800/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/CapacityStarttimesTest.java
+END
+ProjectConverterTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/515/branches/Mediator/test/de/hft_stuttgart/sopro/mediator/ProjectConverterTest.java
+END

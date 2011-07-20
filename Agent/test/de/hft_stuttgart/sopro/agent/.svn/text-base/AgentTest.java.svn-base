@@ -1,0 +1,438 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-05 20:57:52 +0100 (Do, 05 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/Agent/test/de/hft_stuttgart/sopro/agent/AgentTest.java $ $Id:
+ * AgentTest.java 174 2009-11-05 19:57:52Z sandro $
+ */
+package de.hft_stuttgart.sopro.agent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import de.hft_stuttgart.sopro.common.exceptions.ProposalNotFoundException;
+import de.hft_stuttgart.sopro.common.exceptions.ResourceNotFoundException;
+import de.hft_stuttgart.sopro.common.project.IJob;
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.project.Project;
+import de.hft_stuttgart.sopro.common.proposal.IProposal;
+import de.hft_stuttgart.sopro.common.proposal.Proposal;
+import de.hft_stuttgart.sopro.common.proposal.ProposalComposition;
+import de.hft_stuttgart.sopro.common.voting.VotingAlgorithmEnum;
+
+/**
+ * @author sdegiorgi@gmail.com
+ */
+public class AgentTest {
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+	}
+
+	@Before
+	public void setUp() {
+	}
+
+	@After
+	public void tearDown() {
+	}
+
+	// for testing only
+	@Test
+	public void constructorTest() {
+		IAgent a = new Agent();
+		assertNotNull(a);
+	}
+	
+	/**
+	 * Test usage of the agent
+	 */
+	@Test
+	public void testUsage() {
+		Agent agent = new Agent();
+
+		// create test Project
+		IProject project = new Project(0, "Test project", 5, 2);
+		int numOfJobs = project.getNumberOfJobs();
+		int numOfRes = project.getNumberOfResources();
+		int[] maxCapacities = new int[numOfRes];
+		maxCapacities[0] = 4;
+		maxCapacities[1] = 3;
+		project.setMaxCapacities(maxCapacities);
+		
+	
+		// Get the jobs of the project and fill them with data
+		IJob job1 = project.retrieveJobFromJobNumber(1);
+		IJob job2 = project.retrieveJobFromJobNumber(2);
+		IJob job3 = project.retrieveJobFromJobNumber(3);
+		IJob job4 = project.retrieveJobFromJobNumber(4);
+		IJob job5 = project.retrieveJobFromJobNumber(5);
+		
+		// set resources and duration of the jobs
+		int[] resources1 = new int[numOfRes];
+		resources1[0] = 0;
+		resources1[1] = 0;
+		job1.setResources(resources1);
+		job1.setDuration(0);
+
+		int[] resources2 = new int[numOfRes];
+		resources2[0] = 1;
+		resources2[1] = 1;
+		job2.setResources(resources2);
+		job2.setDuration(2);
+
+		int[] resources3 = new int[numOfRes];
+		resources3[0] = 1;
+		resources3[1] = 1;
+		job3.setResources(resources3);
+		job3.setDuration(3);
+
+		int[] resources4 = new int[numOfRes];
+		resources4[0] = 3;
+		resources4[1] = 3;
+		job4.setResources(resources4);
+		job4.setDuration(4);
+
+		int[] resources5 = new int[numOfRes];
+		resources5[0] = 0;
+		resources5[1] = 0;
+		job5.setResources(resources5);
+		job5.setDuration(0);
+
+		// Create a test permutation
+		List<IJob> testPermutation = new ArrayList<IJob>();
+		// add all jobs
+		testPermutation.add(job1);
+		testPermutation.add(job2);
+		testPermutation.add(job3);
+		testPermutation.add(job4);
+		testPermutation.add(job5);
+
+		//Create a test proposal
+		IProposal proposal = new Proposal(numOfJobs, numOfRes);
+		// Set the permutation
+		proposal.setPermutation(testPermutation);		
+		//Generate Starttimes
+		List<List<Integer>> starttimes = new ArrayList<List<Integer>>( numOfRes );
+		for(int i=0; i<numOfRes; i++){
+			List<Integer> resStarttime = new ArrayList<Integer>(numOfJobs);
+			for(int j=0; j<numOfJobs; j++){
+				//For testing initialize all starttimes with zero
+				resStarttime.add(new Integer(0));
+			}
+			
+			//Add resStarttimes to the starttimes
+			starttimes.add(resStarttime);
+		}
+		proposal.setStarttimes(starttimes);
+		
+		//Create Payments
+		List<Double> payment = new ArrayList<Double>(numOfJobs);
+		payment.add(new Double(0));  // 0  euro for the first job
+		payment.add(new Double(10)); // 10 euro for the second job
+		payment.add(new Double(10)); // 10 euro for the third job
+		payment.add(new Double(10)); // 10 euro for the fourth job
+		payment.add(new Double(0));  // 0  euro for the last job
+		agent.setPaymentData(payment);
+		
+		//With this payments the total cash value of the proposal have to be 60, 30 for each resource
+		double totalCashValue = agent.calculateTotalCashValue(proposal);
+		assertEquals( totalCashValue, 29.11, 0.01);
+	}
+	
+	/**
+	 * Test voting of the agent
+	 * @throws ResourceNotFoundException 
+	 */
+	@Test
+	public void testVoting() throws ResourceNotFoundException {
+		IAgent agent = new Agent();
+
+		// create test Project
+		IProject project = new Project(0, "Test project", 5, 2);
+		int numOfJobs = project.getNumberOfJobs();
+		int numOfRes = project.getNumberOfResources();
+		int[] maxCapacities = new int[numOfRes];
+		maxCapacities[0] = 4;
+		maxCapacities[1] = 3;
+		project.setMaxCapacities(maxCapacities);
+		
+		/*
+		 * Test with the following network plan 2 / \ 1 ----3--5 \ --4-/
+		 */
+		// Get the jobs of the project and fill them with data
+		IJob job1 = project.retrieveJobFromJobNumber(1);
+		IJob job2 = project.retrieveJobFromJobNumber(2);
+		IJob job3 = project.retrieveJobFromJobNumber(3);
+		IJob job4 = project.retrieveJobFromJobNumber(4);
+		IJob job5 = project.retrieveJobFromJobNumber(5);
+		
+		// set resources and duration of the jobs
+		int[] resources1 = new int[numOfRes];
+		resources1[0] = 0;
+		resources1[1] = 0;
+		job1.setResources(resources1);
+		job1.setDuration(0);
+
+		int[] resources2 = new int[numOfRes];
+		resources2[0] = 1;
+		resources2[1] = 1;
+		job2.setResources(resources2);
+		job2.setDuration(2);
+
+		int[] resources3 = new int[numOfRes];
+		resources3[0] = 1;
+		resources3[1] = 1;
+		job3.setResources(resources3);
+		job3.setDuration(3);
+
+		int[] resources4 = new int[numOfRes];
+		resources4[0] = 3;
+		resources4[1] = 3;
+		job4.setResources(resources4);
+		job4.setDuration(4);
+
+		int[] resources5 = new int[numOfRes];
+		resources5[0] = 0;
+		resources5[1] = 0;
+		job5.setResources(resources5);
+		job5.setDuration(0);
+
+		//Create proposals for the Project
+		ProposalComposition proposalComposition = new ProposalComposition();
+		
+		// Create a test permutation
+		List<IJob> testPermutation = new ArrayList<IJob>();
+		//Set the starttimes in the jobs
+		job1.adjustStartTimeForIndex(0, 0);
+		job2.adjustStartTimeForIndex(0, 0);
+		job3.adjustStartTimeForIndex(2, 0);
+		job4.adjustStartTimeForIndex(0, 0);
+		job5.adjustStartTimeForIndex(5, 0);
+		
+		job1.adjustStartTimeForIndex(0, 1);
+		job2.adjustStartTimeForIndex(0, 1);
+		job3.adjustStartTimeForIndex(2, 1);
+		job4.adjustStartTimeForIndex(5, 1);
+		job5.adjustStartTimeForIndex(9, 1);
+		
+		// add all jobs
+		testPermutation.add(job1);
+		testPermutation.add(job2);
+		testPermutation.add(job3);
+		testPermutation.add(job4);
+		testPermutation.add(job5);
+		
+		//Create a test proposal
+		IProposal proposal1 = new Proposal(numOfJobs, numOfRes);
+		// Set the permutation
+		proposal1.setPermutation(testPermutation);	
+		
+		//Generate Starttimes for proposal 1
+		List<List<Integer>> starttimes1 = new ArrayList<List<Integer>>( numOfRes );
+		for(int i=0; i<numOfRes; i++){
+			List<Integer> resStarttime = new ArrayList<Integer>(numOfJobs);
+			
+			//Set starttimes for resource 1
+			if(i==0){
+				// For all permutations there are one starttime solutions for resource 1:
+			    //[0 0 2 0 5]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(2));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(5));
+			}
+			else{
+				//For the permutations p(1 2 3 4 5) the starttime solution 
+				//for resource 2 is [0 0 2 5 9]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(2));
+				resStarttime.add(new Integer(5));
+				resStarttime.add(new Integer(9));
+			}
+			
+			//Add resStarttimes to the starttimes
+			starttimes1.add(resStarttime);
+		}
+		proposal1.setStarttimes(starttimes1);
+		proposalComposition.addProposal(proposal1);
+		
+		// Create a test permutation
+		List<IJob> testPermutation3 = new ArrayList<IJob>();
+		//Set the starttimes in the jobs
+		job1.adjustStartTimeForIndex(0, 0);
+		job2.adjustStartTimeForIndex(0, 0);
+		job3.adjustStartTimeForIndex(2, 0);
+		job4.adjustStartTimeForIndex(0, 0);
+		job5.adjustStartTimeForIndex(5, 0);
+		
+		job1.adjustStartTimeForIndex(0, 1);
+		job2.adjustStartTimeForIndex(4, 1);
+		job3.adjustStartTimeForIndex(6, 1);
+		job4.adjustStartTimeForIndex(0, 1);
+		job5.adjustStartTimeForIndex(9, 1);
+		
+		// add all jobs
+		testPermutation3.add(job1);
+		testPermutation3.add(job4);
+		testPermutation3.add(job2);
+		testPermutation3.add(job3);
+		testPermutation3.add(job5);
+		
+		//Create a test proposal
+		IProposal proposal3 = new Proposal(numOfJobs, numOfRes);
+		// Set the permutation
+		proposal3.setPermutation(testPermutation3);	
+		
+		//Generate Starttimes for proposal 3
+		List<List<Integer>> starttimes3 = new ArrayList<List<Integer>>( numOfRes );
+		for(int i=0; i<numOfRes; i++){
+			List<Integer> resStarttime = new ArrayList<Integer>(numOfJobs);
+			
+			//Set starttimes for resource 1
+			if(i==0){
+				// For all permutations there are one starttime solutions for resource 1:
+			    //[0 0 2 0 5]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(2));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(5));
+			}
+			else{
+				//For the permutations p(1 4 2 3 5) the starttime solution 
+				//for resource 2 is [0 4 6 0 9]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(4));
+				resStarttime.add(new Integer(6));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(9));
+			}
+			
+			//Add resStarttimes to the starttimes
+			starttimes3.add(resStarttime);
+		}
+		proposal3.setStarttimes(starttimes3);
+		proposalComposition.addProposal(proposal3);
+		
+		
+		// Create a test permutation
+		List<IJob> testPermutation2 = new ArrayList<IJob>();
+		//Set the starttimes in the jobs
+		job1.adjustStartTimeForIndex(0, 0);
+		job2.adjustStartTimeForIndex(0, 0);
+		job3.adjustStartTimeForIndex(2, 0);
+		job4.adjustStartTimeForIndex(0, 0);
+		job5.adjustStartTimeForIndex(5, 0);
+		
+		job1.adjustStartTimeForIndex(0, 1);
+		job2.adjustStartTimeForIndex(0, 1);
+		job3.adjustStartTimeForIndex(6, 1);
+		job4.adjustStartTimeForIndex(2, 1);
+		job5.adjustStartTimeForIndex(9, 1);
+		
+		// add all jobs
+		testPermutation2.add(job1);
+		testPermutation2.add(job2);
+		testPermutation2.add(job4);
+		testPermutation2.add(job3);
+		testPermutation2.add(job5);
+		
+		//Create a test proposal
+		IProposal proposal2 = new Proposal(numOfJobs, numOfRes);
+		// Set the permutation
+		proposal2.setPermutation(testPermutation2);	
+		
+		//Generate Starttimes for proposal 1
+		List<List<Integer>> starttimes2 = new ArrayList<List<Integer>>( numOfRes );
+		for(int i=0; i<numOfRes; i++){
+			List<Integer> resStarttime = new ArrayList<Integer>(numOfJobs);
+			
+			//Set starttimes for resource 1
+			if(i==0){
+				// For all permutations there are one starttime solutions for resource 1:
+			    //[0 0 2 0 5]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(2));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(5));
+			}
+			else{
+				//For the permutations p(1 2 4 3 5) the starttime solution 
+				//for resource 2 is [0 0 6 2 9]
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(0));
+				resStarttime.add(new Integer(6));
+				resStarttime.add(new Integer(2));
+				resStarttime.add(new Integer(9));
+			}
+			
+			//Add resStarttimes to the starttimes
+			starttimes2.add(resStarttime);
+		}
+		proposal2.setStarttimes(starttimes2);
+		proposalComposition.addProposal(proposal2);
+		
+		//Add the proposals again as a duplicate
+		proposalComposition.addProposal(proposal1.clone());
+		proposalComposition.addProposal(proposal3.clone());
+		proposalComposition.addProposal(proposal2.clone());
+		
+		//Create Payments
+		List<Double> payment = new ArrayList<Double>(numOfJobs);
+		payment.add(new Double(0));  // 0  euro for the first job
+		payment.add(new Double(10)); // 10 euro for the second job
+		payment.add(new Double(20)); // 20 euro for the third job
+		payment.add(new Double(30)); // 10 euro for the fourth job
+		payment.add(new Double(0));  // 0  euro for the last job
+		agent.setPaymentData(payment);
+		
+		//Set the voting algorithm to Borda
+		agent.setVotingAlgorithm(VotingAlgorithmEnum.BORDA);
+		
+		//Perform now a Voting with the proposals
+		agent.performVoting(proposalComposition);
+		ProposalComposition evaluatedProposals = proposalComposition;
+		
+		assertEquals(evaluatedProposals.getNumberOfProposals(), proposalComposition.getNumberOfProposals());
+		
+		//Check the evaluation points of the proposals
+		try {
+			/*//For those who want to see the output
+			System.out.print( evaluatedProposals.getProposalByIndex(0).getEvaluationPoints() + " "); //Proposal1 has the lowest cash value
+			System.out.print( evaluatedProposals.getProposalByIndex(1).getEvaluationPoints() + " "); //Proposal3 has the highest cash value
+			System.out.print( evaluatedProposals.getProposalByIndex(2).getEvaluationPoints() + " "); //Proposal2 has a middle cash value
+			System.out.print( evaluatedProposals.getProposalByIndex(3).getEvaluationPoints() + " "); //Proposal1 has the lowest cash value
+			System.out.print( evaluatedProposals.getProposalByIndex(4).getEvaluationPoints() + " "); //Proposal3 has the highest cash value
+			System.out.print( evaluatedProposals.getProposalByIndex(5).getEvaluationPoints() + " "); //Proposal2 has a middle cash value
+			*/
+			assertEquals(evaluatedProposals.getProposalByIndex(0).getEvaluationPoints(), 0); //Proposal1 has the lowest cash value
+			assertEquals(evaluatedProposals.getProposalByIndex(1).getEvaluationPoints(), 4); //Proposal3 has the highest cash value
+			assertEquals(evaluatedProposals.getProposalByIndex(2).getEvaluationPoints(), 2); //Proposal2 has a middle cash value
+			assertEquals(evaluatedProposals.getProposalByIndex(3).getEvaluationPoints(), 1); //Proposal1 has the lowest cash value
+			assertEquals(evaluatedProposals.getProposalByIndex(4).getEvaluationPoints(), 5); //Proposal3 has the highest cash value
+			assertEquals(evaluatedProposals.getProposalByIndex(5).getEvaluationPoints(), 3); //Proposal2 has a middle cash value
+			
+		} catch (ProposalNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+}

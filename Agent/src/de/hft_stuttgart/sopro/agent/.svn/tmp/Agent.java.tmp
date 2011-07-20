@@ -1,0 +1,96 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-05 16:58:34 +0100 (Do, 05 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/Agent/src/de/hft_stuttgart/sopro/agent/Agent.java $ $Id:
+ * Agent.java 143 2009-11-05 15:58:34Z sandro $
+ */
+package de.hft_stuttgart.sopro.agent;
+
+import java.util.List;
+
+import de.hft_stuttgart.sopro.agent.remote.MediatorAgentServiceStub;
+import de.hft_stuttgart.sopro.agent.remote.MediatorAgentServiceStub.RegisterAgentResponse;
+
+/**
+ * @author Eduard Tudenhoefner - nastra@gmx.net
+ * @author Sandro Degiorgi - sdegiorgi@gmail.com
+ */
+public class Agent implements IAgent {
+	final static int TEST_ROUNDS_COMMON = 23;
+	final static int TEST_ROUNDS_IDGENERATION = 10;
+	final static int TEST_ROUNDS_WEBSERVICE = 10;
+	final static int TEST_ROUNDS = 3;
+
+	/**
+	 * "Dummy" main method to do some testing that is, including and using the
+	 * commonlayer hopefully make hudson spit out a runnable jar and furthermore
+	 * (this is where wishing well begins) add java web start capability poc
+	 */
+	public static void main(String[] args) {
+		System.out.println("Agent started.");
+		try {
+			long startTime;
+			long endTime;
+			long measures = 0;
+			long mStart;
+			long mHelper;
+			
+/*			// testing common
+			for (int x = 1; x <= TEST_ROUNDS_COMMON; x++) {
+  			  System.out.println("Common call: " + AgentIdGenerator.getInstance().getNextId());
+			}
+*/
+			// testing a remote call
+			System.out.println("Calling webservice (connecting tomcat.examer.de)...");
+			startTime = System.currentTimeMillis();
+
+//			MediatorAgentServiceStub stub = new MediatorAgentServiceStub();
+			MediatorAgentServiceStub stub = new MediatorAgentServiceStub("http://localhost:8080/axis2/services/MediatorAgentService");
+			for (int x = 1; x <= TEST_ROUNDS; x++) {
+				for (int i = 1; i <= TEST_ROUNDS_WEBSERVICE; i++) {
+					mStart = System.nanoTime();
+					stub.remoteCall();
+					mHelper = System.nanoTime() - mStart;
+					System.out.println("Calling round " + x + " webservice #" + i + " - took: " + mHelper + " ns");
+					measures += mHelper;
+				}
+			}
+			endTime = System.currentTimeMillis();
+			System.out.println("After " + TEST_ROUNDS_WEBSERVICE * TEST_ROUNDS + " Test rounds average calling time was " + ((double) measures / (double) (TEST_ROUNDS_WEBSERVICE * TEST_ROUNDS * 1E6))
+					+ " ms");
+			System.out.println("Online calltime: " + ((double) (endTime - startTime)) / 1E3 + " s");
+
+			// IDs are now requested from Mediator
+			for (int i = 0; i < TEST_ROUNDS_IDGENERATION; i++) {
+				RegisterAgentResponse response = stub.registerAgent();
+				System.out.println("Requesting new ID: " + response.get_return());
+			}
+
+			System.out.println("Agent shutting down.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Integer> calculateProposals(List<List<Integer>> proposals) {
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public double calculateTotalCashValue(List<Integer> solution) {
+		return 0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setPaymentData(List<Double> payments) {
+	}
+
+}

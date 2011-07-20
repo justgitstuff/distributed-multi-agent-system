@@ -1,0 +1,165 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-02 22:36:11 +0100 (Mo, 02 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/Mediator.java $
+ * $Id$
+ */
+package de.hft_stuttgart.sopro.mediator;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.hft_stuttgart.sopro.common.exceptions.ProjectNotFoundException;
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.project.ProjectComposition;
+import de.hft_stuttgart.sopro.mediator.data.DataIO;
+import de.hft_stuttgart.sopro.mediator.session.MediationSession;
+
+/**
+ * The singleton Mediator. A reference can be received by calling
+ * {@link #getInstance()}.
+ * 
+ * @author Eduard Tudenhoefner - nastra@gmx.net
+ */
+public class Mediator {
+
+	private List<IProject> availableProjects;
+
+	private ProjectComposition projectComposition;
+
+	/**
+	 * The Map containing {@link MediationSession} objects. They key consists of
+	 * the IdentityHashcode of {@link IProject} and the string representation of
+	 * the project name.
+	 * 
+	 * @see System#identityHashCode(Object)
+	 * @see IProject#getProjectName()
+	 */
+	private Map<String, MediationSession> mediationSessionMap = new HashMap<String, MediationSession>();
+
+	/**
+	 * The Mediator instance.
+	 */
+	private static Mediator instance = null;
+
+	static {
+		instance = new Mediator();
+		// instance.init();
+	}
+
+	/**
+	 * Default constructor which should't be called from outside.
+	 */
+	private Mediator() {
+	}
+
+	/**
+	 * The method where the {@link Mediator} instance can be retrieved from.
+	 * 
+	 * @return A {@link Mediator} instance.
+	 */
+	public static final Mediator getInstance() {
+		if (null == instance) {
+			instance = new Mediator();
+		}
+		return instance;
+	}
+
+	public void init() {
+		// TODO ET: need to find another way for this
+		DataIO dataIO = new DataIO();
+		String filepath = "C:\\Dokumente und Einstellungen\\Administrator\\Eigene Dateien\\SoftwareProject\\Problem\\instances\\";
+		projectComposition = dataIO.loadAllProblemData(filepath);
+		availableProjects = projectComposition.getProjects();
+	}
+
+	private List<List<Integer>> createProposals() {
+		return null;
+	}
+
+	private void aggregateVoting() {
+
+	}
+
+	private void updatePheromoneMatrix() {
+
+	}
+
+	public void setProposalScore() {
+
+	}
+
+	public List<IProject> getAvailableProjects() {
+		return availableProjects;
+	}
+
+	/**
+	 * An Agent can join a project by specifying the projectId to join and its
+	 * agentId.
+	 * 
+	 * @param projectId
+	 *            The id of the project to join.
+	 * @param agentId
+	 *            The id of the agent.
+	 * @return true when it was possible to join the project, otherwise false.
+	 */
+	public boolean joinProject(int projectId, int agentId) {
+		if (null != projectComposition) {
+			try {
+				IProject project = projectComposition.getProjectById(projectId);
+				String hashMapKey = System.identityHashCode(project) + project.getProjectName();
+
+				if (project.getCurrentAgentsOnProject().isEmpty()) {
+					// first arriving agent is the creator of the session
+					MediationSession session = new MediationSession(project, agentId);
+					mediationSessionMap.put(hashMapKey, session);
+				} else {
+					// second arriving agent just joins a previous created
+					// session
+					MediationSession session = mediationSessionMap.get(hashMapKey);
+					session.addAgentToSession(agentId);
+				}
+
+				project.joinProject(agentId);
+				return true;
+			} catch (ProjectNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns a list of payment data for a project specified by the projectId
+	 * and the agentId.
+	 * 
+	 * @param projectId
+	 *            The id of the project where the payment data should be
+	 *            retrieved from.
+	 * @param agentId
+	 *            The id of the agent.
+	 * @return A list of payment data for a project specified by the projectId
+	 *         and the agentId.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Double> retrievePaymentDataForProject(int projectId, int agentId) {
+		if (null != projectComposition) {
+			try {
+				IProject project = projectComposition.getProjectById(projectId);
+				return project.getPayments();
+			} catch (ProjectNotFoundException e) {
+				e.printStackTrace();
+			}
+
+		}
+		return Collections.EMPTY_LIST;
+	}
+
+	public void sendProposals() {
+		// method should have a return type
+	}
+
+}

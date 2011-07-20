@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui
+END
+ViewEnum.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/726/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ViewEnum.java
+END
+ViewFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/738/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ViewFactory.java
+END
+ChartComposite.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/854/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ChartComposite.java
+END
+NegotiationSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/893/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/NegotiationSession.java
+END
+ChartEnum.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/803/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ChartEnum.java
+END
+AmpManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/844/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/AmpManager.java
+END
+ChartFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/814/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ChartFactory.java
+END
+Amp.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/858/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/Amp.java
+END
+ViewComposite.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/881/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/ViewComposite.java
+END

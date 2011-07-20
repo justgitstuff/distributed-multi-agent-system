@@ -1,0 +1,817 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-06 14:44:40 +0100 (Fr, 06 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/data/DataIO.java
+ * $ $Id$
+ */
+package de.hft_stuttgart.sopro.mediator.data;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mysql.jdbc.Driver;
+
+import de.hft_stuttgart.sopro.common.exceptions.AgentIndexOutOfBoundsException;
+import de.hft_stuttgart.sopro.common.project.IJob;
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.project.Project;
+import de.hft_stuttgart.sopro.common.project.ProjectComposition;
+import de.hft_stuttgart.sopro.mediator.data.generator.ProjectIdGenerator;
+
+/**
+ * A Class which provides methods for loading the problem-data from a file and
+ * save the solution into a file.
+ * 
+ * @author Annemarie Meissner
+ * @version 1.0
+ */
+public class DataIO {
+
+	private ProjectIdGenerator projectIdGenerator = ProjectIdGenerator.getInstance();
+
+	private static final String PROBLEM_DATA_EXT = ".RCP";
+	private static final String PAYMENT_DATA_EXT = ".in";
+	private static final String PROBLEM_DATA_PATH = "ProblemData";
+	private static final String SOLUTION_RESULTS_PATH = "SolutionResults";
+	private static final String SOLUTION_RESULTS_FILENAME = "SolutionResults.csv";
+
+	/**
+	 * The method gets the absolute path of the java project for the problem
+	 * data
+	 * 
+	 * @return the absolute path
+	 */
+	public String getProblemDataPath() {
+		if (System.getProperties().getProperty("test.problemData", null) != null) {
+			return System.getProperties().getProperty("test.problemData");
+		} else {
+			return PROBLEM_DATA_PATH + File.separator;
+		}
+	}
+
+	/**
+	 * The method gets the absolute path of the java project for the solution
+	 * results
+	 * 
+	 * @return the absolute path of the solution results folder
+	 */
+	public String getSolutionResultsPath() {
+		if (System.getProperties().getProperty("test.sulutionResults", null) != null) {
+			return System.getProperties().getProperty("test.solutionResults");
+		} else {
+			return SOLUTION_RESULTS_PATH + File.separator;
+		}
+	}
+
+	/**
+	 * The method loads all problem data in a folder in the project composition
+	 * 
+	 * @param folderPath
+	 *            folder path where you can find the problem data
+	 * @return returns a projectCompositon which contains all projects of the
+	 *         folder.
+	 */
+	public ProjectComposition loadAllProblemData(String folderPath) {
+		ProjectComposition allProjects = new ProjectComposition();
+
+		// Create a file and get all children
+		File dir = new File(folderPath);
+		String[] children = dir.list();
+
+		if (null != children && children.length > 0) {
+			// go through all folder and read the project data recursively
+			for (String name : children) {
+				File child = new File(folderPath + name);
+				// System folder starts with a dot and they are not interesting
+				// for
+				// us
+				if (child.isDirectory() && !name.startsWith(".")) {
+					loadRecursiveProblemData(allProjects, folderPath + name + File.separator);
+				} else {
+					// Read the problemdata and add it to the ProjectComposition
+					if (name.endsWith(PROBLEM_DATA_EXT)) {
+						IProject project = this.loadProblemData(folderPath + name);
+						allProjects.addProject(project);
+					}
+				}
+			}
+
+			// go again throw all folders and read the payment data of the
+			// projects recursively
+			for (String s : children) {
+				File child = new File(folderPath + s);
+				// System folder starts with a dot and they are not interesting
+				// for us
+				if (child.isDirectory() && !s.startsWith(".")) {
+					try {
+						loadRecursivePaymentData(allProjects, folderPath + s + File.separator);
+					} catch (AgentIndexOutOfBoundsException e) {
+						e.printStackTrace();
+					}
+				} else {
+					// Read the payment data and add it to the
+					// ProjectComposition
+					if (s.endsWith(PAYMENT_DATA_EXT)) {
+						List<Double> payment = this.loadPaymentData(folderPath + s);
+
+						// The number of payment values is the number of jobs of
+						// the project for which the payment data is given.
+						int numOfJobs = payment.size();
+
+						// Read the index of the agent for which the payment
+						// data was read
+						int indexOfAgent = this.getAgentIndex(folderPath + s);
+
+						// Add the payment data to the given Project composition
+						try {
+							allProjects.setPaymentDataOfProject(numOfJobs, payment, indexOfAgent);
+						} catch (AgentIndexOutOfBoundsException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+
+		return allProjects;
+	}
+
+	/**
+	 * The method loads recursive all problem data in a folder (and all child
+	 * folder) in the given project composition
+	 * 
+	 * @param folderPath
+	 *            folder path where you can find the problem data
+	 */
+	private void loadRecursiveProblemData(ProjectComposition allProjects, String folderPath) {
+
+		// Create a file and get all children
+		File dir = new File(folderPath);
+		String[] children = dir.list();
+
+		// go throw all folder and read the project data recursively
+		for (String s : children) {
+			File child = new File(folderPath + s);
+			// System folder starts with a dot and they are not interesting for
+			// us
+			if (child.isDirectory() && !s.startsWith(".")) {
+				loadRecursiveProblemData(allProjects, folderPath + s + File.separator);
+			} else {
+				// Read the problem data and add it to the ProjectComposition
+				if (s.endsWith(PROBLEM_DATA_EXT)) {
+					IProject project = this.loadProblemData(folderPath + s);
+					allProjects.addProject(project);
+				}
+			}
+		}
+	}
+
+	/**
+	 * The method loads recursive all payment data in a folder (and all child
+	 * folder) in the given project composition
+	 * 
+	 * @param folderPath
+	 *            folder path where you can find the payment data
+	 * @throws AgentIndexOutOfBoundsException
+	 */
+	private void loadRecursivePaymentData(ProjectComposition allProjects, String folderPath) throws AgentIndexOutOfBoundsException {
+
+		// Create a file and get all children
+		File dir = new File(folderPath);
+		String[] children = dir.list();
+
+		// go throw all folders and read the payment data of the projects
+		// recursively
+		for (String s : children) {
+			File child = new File(folderPath + s);
+			// System folder starts with a dot and they are not interesting for
+			// us
+			if (child.isDirectory() && !s.startsWith(".")) {
+				loadRecursivePaymentData(allProjects, folderPath + s + File.separator);
+			} else {
+				// Read the payment data and add it to the ProjectComposition
+				if (s.endsWith(PAYMENT_DATA_EXT)) {
+					List<Double> payment = this.loadPaymentData(folderPath + s);
+
+					// The number of payment values is the number of jobs of the
+					// project for which the payment data is given.
+					int numOfJobs = payment.size();
+
+					// Read the index of the agent for which the payment data
+					// was read
+					int indexOfAgent = this.getAgentIndex(folderPath + s);
+
+					// Add the payment data to the given Project composition
+					allProjects.setPaymentDataOfProject(numOfJobs, payment, indexOfAgent);
+				}
+			}
+		}
+	}
+
+	/**
+	 * The method parse the index of the agent out of the file path for which
+	 * the payment data is stored in the file
+	 * 
+	 * @param paymentPath
+	 *            The string contains the file path for the payment data
+	 * @return the index of the agent for which the payment data is stored in
+	 *         the file
+	 */
+	private int getAgentIndex(String paymentPath) {
+		// Parse the number of the agent from the payment path
+		int pathSeperatorIndex = paymentPath.lastIndexOf(File.separator);
+		int dotIndex = paymentPath.lastIndexOf('.');
+
+		// Get the file name of the payment data
+		String fileName = paymentPath.substring(pathSeperatorIndex + 1, dotIndex);
+
+		int underscoreIndex = fileName.lastIndexOf('_');
+		int agentNr = Integer.valueOf(fileName.substring(underscoreIndex - 1, underscoreIndex));
+		return agentNr - 1;
+	}
+
+	/**
+	 * The method loads one payment data file in a Double list object.
+	 * 
+	 * @param filePath
+	 *            file path where you can find the payment data
+	 * @return returns a list with the payment data
+	 */
+	private List<Double> loadPaymentData(String filePath) {
+		// Get a fileReader Object form the filePath
+		String line;
+
+		// Create a new list
+		List<Double> paymentData = new ArrayList<Double>();
+
+		try {
+			final BufferedReader inputStream = new BufferedReader(new FileReader(filePath));
+
+			while ((line = inputStream.readLine()) != null) {
+				Double paymentValue = Double.valueOf(line);
+				paymentData.add(paymentValue);
+			}
+
+		} catch (FileNotFoundException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, this, "Error: File doesn`t exist!", 0);
+			e.printStackTrace();
+		} catch (IOException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, this, "Error: Can`t read file!", 0);
+			e.printStackTrace();
+		}
+
+		return paymentData;
+	}
+
+	/**
+	 * The method loads one problem data file in a Project object.
+	 * 
+	 * @param filePath
+	 *            file path where you can find the problem data
+	 * @return returns the project object
+	 */
+	public IProject loadProblemData(String filePath) {
+		// Get a fileReader Object form the filePath
+		String line;
+		int lineCount = 0;
+
+		// project stuff
+		IProject project = null;
+		String projectName = this.getProjectName(filePath);
+		int numberOfJobs = 0;
+		int numberOfResources = 0;
+		int[] maxCapacities = null;
+		int jobCount = 1;
+
+		try {
+			final BufferedReader inputStream = new BufferedReader(new FileReader(filePath));
+
+			while ((line = inputStream.readLine()) != null) {
+				// the first line of the file contains the number of jobs and
+				// the number of resources
+				if (lineCount == 0) {
+					int[] genericData = this.readGenericData(line);
+					numberOfJobs = genericData[0];
+					numberOfResources = genericData[1];
+
+					// create new Project instance
+					project = new Project(projectIdGenerator.getNextId(), projectName, numberOfJobs, numberOfResources);
+				}
+				// the second line of the file contains
+				// the maximum units of the resources
+				else if (lineCount == 1) {
+					maxCapacities = this.readMaxCapacities(line, numberOfResources);
+
+					// Set maxCapaceties in the project
+					project.setMaxCapacities(maxCapacities);
+				}
+				// the other lines contain
+				// duration | units per period for R1 | units per period for R2
+				// |
+				// units per period for R3 | units per period for R4 |
+				// nr of successors | successors
+				else {
+					// get the current job instance of the project
+					this.readJobData(line, project, jobCount);
+					jobCount++;
+				}
+				// increase line count
+				lineCount++;
+			}
+
+		} catch (FileNotFoundException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, this, "Error: File doesn`t exist!", 0);
+			e.printStackTrace();
+		} catch (IOException e) {
+			javax.swing.JOptionPane.showMessageDialog(null, this, "Error: Can`t read file!", 0);
+			e.printStackTrace();
+		}
+
+		return project;
+	}
+
+	/**
+	 * The method parse the project name out of the file path for which the
+	 * project data is stored in the file
+	 * 
+	 * @param projectPath
+	 *            The string contains the file path for the project data
+	 * @return the project name
+	 */
+	private String getProjectName(String projectPath) {
+		// Parse project name and form the project path
+		int dotIndex = projectPath.lastIndexOf('.');
+		int pathSeperatorIndex = projectPath.lastIndexOf(File.separator);
+		String projectName = projectPath.substring(pathSeperatorIndex + 1, dotIndex);
+		return projectName;
+	}
+
+	/**
+	 * The method reads the number of jobs and resources of the job
+	 * 
+	 * @param line
+	 *            The string contains a line of the file
+	 * @return returns true if the reading process was successful otherwise the
+	 *         method return false
+	 */
+	private int[] readGenericData(String line) {
+
+		String[] words = this.parseLine(line);
+		int[] returnValues = new int[2];
+
+		// The first number of the line is the number of jobs in the project
+		returnValues[0] = Integer.valueOf(words[0]).intValue();
+
+		// The second number of the line is the number of resources in the
+		// project
+		returnValues[1] = Integer.valueOf(words[1]).intValue();
+
+		return returnValues;
+	}
+
+	/**
+	 * The method reads the maximum resources of the project
+	 * 
+	 * @param line
+	 *            The string contains a line of the file
+	 * @return returns true if the reading process was successful otherwise the
+	 *         method return false
+	 */
+	private int[] readMaxCapacities(String line, int numRes) {
+		String[] words = this.parseLine(line);
+
+		// allocate maxResources array
+		int[] maxCapaceties = new int[numRes];
+		for (int i = 0; i < numRes; i++) {
+			maxCapaceties[i] = Integer.valueOf(words[i].trim()).intValue();
+		}
+
+		return maxCapaceties;
+	}
+
+	/**
+	 * The method reads the job data of the project
+	 * 
+	 * @param line
+	 *            The string contains a line of the file
+	 * @return returns true if the reading process was successful otherwise the
+	 *         method return false
+	 */
+	private void readJobData(String line, IProject project, int jobNr) {
+
+		// current Job
+		IJob job = project.retrieveJobFromJobNumber(jobNr);
+		int numRes = project.getNumberOfResources();
+
+		// parse the line in words
+		String[] words = this.parseLine(line);
+		int wordCount = 0;
+
+		// **********************************************************************************
+		// set jobNr
+		// **********************************************************************************
+		job.setJobNumber(jobNr);
+
+		// *********************************************************************************
+		// the first value of the line is the duration of the job --> set
+		// duration
+		// **********************************************************************************
+		job.setDuration(Integer.valueOf(words[wordCount].trim()).intValue());
+		wordCount++; // increase wordCount for the next value
+
+		// **********************************************************************************
+		// the next m_numRes_i values contain the units per period for each of
+		// the resources
+		// **********************************************************************************
+		// initialize a new resource array for the job
+		int[] resources = new int[numRes];
+		// read the values for each resource
+		for (int i = 0; i < numRes; i++) {
+			resources[i] = Integer.valueOf(words[wordCount].trim()).intValue();
+			wordCount++; // increase wordCount for the next value
+		}
+
+		// set the resource array in the job
+		job.setResources(resources);
+
+		// **********************************************************************************
+		// the next word is the number of successors of the job
+		// **********************************************************************************
+		int numSuccessors = Integer.valueOf(words[wordCount].trim()).intValue();
+		wordCount++; // increase wordCount for the next value
+		// read the jobNr of the successors and add them as successors
+		for (int i = 0; i < numSuccessors; i++) {
+			// get job with this number
+			int successorNr = Integer.valueOf(words[wordCount].trim()).intValue();
+			IJob successor = project.retrieveJobFromJobNumber(successorNr);
+
+			// add the job as successor
+			job.addSuccessor(successor);
+			// add the current job as predecessor of the successor
+			successor.addPredecessor(job);
+
+			wordCount++; // increase wordCount for the next value
+		}
+	}
+
+	/**
+	 * The method parses a line of words in a array of Strings. Assuming, the
+	 * words are separated by six blanks.
+	 * 
+	 * @param line
+	 *            The string contains a line of words
+	 * @return returns a array of Strings which contain the words of the line
+	 */
+	private String[] parseLine(String line) {
+		line = line.trim();
+		String[] words = line.split(" ");
+		int addIndex = 0;
+		String[] returnWords = new String[words.length];
+
+		for (String s : words) {
+			if (!s.isEmpty()) {
+				returnWords[addIndex] = s;
+				addIndex++;
+			}
+		}
+
+		return returnWords;
+	}
+
+	/**
+	 * The method initializes the file for the negotiation time line
+	 * 
+	 * @param filePath
+	 *            the filePath where the file should be written
+	 * @return the file Writer object which is used in the method
+	 *         writeNegotiationTimeLine
+	 * @throws IOException
+	 *             if the named file exists but is a directory rather than a
+	 *             regular file, does not exist but cannot be created, or cannot
+	 *             be opened for any other reason
+	 */
+	public FileWriter initWriteNegotiationTimeLine(String filePath, String projectName, int negotiationRounds, int proposalsPerRound, String votingAlgorithm, String updateRule) {
+		// Associate the filepath and the project name with the current
+		// timestamp
+		String fileName = filePath + projectName + "__" + System.currentTimeMillis() + ".csv";
+		FileWriter fileWriter = null;
+
+		try {
+			fileWriter = new FileWriter(fileName);
+			// Write Negotiation specific data
+			String projectSpecific = "Rounds; Proposals per Round; Voting Algorithm; Update Rule;\n";
+			fileWriter.append(projectSpecific);
+			String projectSpecificValues = negotiationRounds + ";" + proposalsPerRound + ";" + votingAlgorithm + ";" + updateRule + "\n\n";
+			fileWriter.append(projectSpecificValues);
+
+			// Write the column name in the file
+			String columnName = "Round; TCV Agent1; TCV Agent2; TCV Sum;\n";
+			fileWriter.append(columnName);
+			fileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return fileWriter;
+	}
+
+	public String writeEvaluationSolution(FileWriter fileWriter, String projectName) {
+		StringBuffer outputString = new StringBuffer();
+		// outputString.append(" ; Best Agent1; Best Agent2; Best Sum; \n" );
+		// Get the evaluation data
+		DecimalFormat printFormat = new DecimalFormat("###,###0.0000");
+		BestSolutionEvaluationDataEnum enumBestSolution = BestSolutionEvaluationDataEnum.valueOf(projectName);
+		outputString.append(";" + printFormat.format(enumBestSolution.getValueAgent1()) + ";");
+		outputString.append(printFormat.format(enumBestSolution.getValueAgent2()) + ";");
+		outputString.append(printFormat.format(enumBestSolution.getValueSum()) + "; Evaluation solution\n");
+
+		try {
+			fileWriter.append(outputString);
+			fileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return outputString.toString();
+	}
+
+	/**
+	 * The method writes the result of the current negotiation round into a csv
+	 * file
+	 * 
+	 * @param fileWriter
+	 *            the initialized fileWriter
+	 * @param totalCashValueAgent1
+	 *            the total cash value of the agent1 of the current round
+	 * @param totalCashValueAgent2
+	 *            the total cash value of the agent2 of the current round
+	 * @param roundNumber
+	 *            the number of the current round
+	 * @return the string which is written in the file
+	 */
+	public String writeNegotiationTimeLine(FileWriter fileWriter, double totalCashValueAgent1, double totalCashValueAgent2, int roundNumber) {
+
+		// Convert the double values in a prinable form
+		DecimalFormat printFormat = new DecimalFormat("###,###0.0000");
+		StringBuffer outputString = new StringBuffer();
+		double sum = totalCashValueAgent1 + totalCashValueAgent2;
+		outputString.append(roundNumber + ";" + printFormat.format(totalCashValueAgent1) + ";" + printFormat.format(totalCashValueAgent2) + ";" + printFormat.format(sum) + ";\n");
+		try {
+			fileWriter.append(outputString.toString());
+			fileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return outputString.toString();
+	}
+
+	/**
+	 * The method closes the file of the negotiation time line and print also
+	 * the best solution in the file
+	 * 
+	 * @param fileWriter
+	 *            the initialized fileWriter
+	 * @param bestSolution
+	 *            the highest sum of the the two cash values of the negotiation
+	 * @param bestSolutionRound
+	 *            the number of the round in which the best solution was found
+	 * @param runtime
+	 *            the runtime of the negotiation in milliseconds
+	 * @return
+	 */
+	public String closeWriteNegotiationTimeLine(FileWriter fileWriter, double bestSolution, int bestSolutionRound, double runtime) {
+		StringBuffer outputString = new StringBuffer();
+
+		try {
+			// outputString.append("\n; ; ; Best TCV sum; in Round; \n");
+			DecimalFormat printFormat = new DecimalFormat("###,###0.0000");
+			outputString.append(bestSolutionRound + "; ; ; " + printFormat.format(bestSolution) + "; Best TCV sum \n\n");
+			double runtimeS = runtime / 1000;
+			DecimalFormat printSeconds = new DecimalFormat("0.00");
+			outputString.append("Runtime in sec" + ";" + printSeconds.format(runtimeS) + "; \n");
+
+			fileWriter.append(outputString.toString());
+			fileWriter.flush();
+
+			// Close the file writer
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return outputString.toString();
+	}
+
+	/**
+	 * The method adds the solution of a negotiation in a the solution file
+	 * 
+	 * @param solution
+	 * @return
+	 */
+	public String writeNegotiationSolution(SolutionData solution) {
+		// Get the filepath of the file where the solution should be written
+		String filepath = this.getSolutionResultsPath() + SOLUTION_RESULTS_FILENAME;
+
+		StringBuffer outputString = new StringBuffer();
+		FileWriter fileWriter = null;
+		try {
+			// Check if the file already exist
+			boolean newFile = new File(filepath).createNewFile();
+
+			// Create the fileWriter object
+			fileWriter = new FileWriter(filepath, true);
+			if (newFile) {
+				// Add the column names in the file
+				fileWriter
+						.append("Instance; Number Of Jobs; Best Agent1; Best Agent2; Best Sum; AMP Solution; Amp Startvalue; Deviation in %; Voting Algo; Proposal Generator Algo; Rounds; Proposals; Makespans; Update Rule\n");
+				fileWriter.flush();
+			}
+
+			// Get the data of the solution
+			// Convert the double values in a printable form
+			int numOfRes = 4;
+			int numberOfJobs = solution.getNumOfJobs();
+			DecimalFormat printFormat = new DecimalFormat("###,###0.0000");
+			String projectName = solution.getProjectName();
+			String bestAgent1 = printFormat.format(solution.getBestSolutionOneAgent1());
+			String bestAgent2 = printFormat.format(solution.getBestSolutionOneAgent2());
+			double bestSumValue = solution.getBestSolutionMultiAgent();
+			String bestSum = printFormat.format(bestSumValue);
+			double ampSolutionValue_start = solution.getSolutionAMP_start();
+			String ampSolution_start = printFormat.format(ampSolutionValue_start);
+			double ampSolutionValue_end = solution.getSolutionAMP_end();
+			String ampSolution_end = printFormat.format(ampSolutionValue_end);
+			double deviationValue = (bestSumValue - ampSolutionValue_end) / ampSolutionValue_end;
+			String deviation = printFormat.format(deviationValue);
+			String votingAlgo = solution.getVotingAlgorithm().toString();
+			String proposalAlgo = solution.getProposalGeneratorAlgorithm();
+			int negotiationRounds = solution.getNumberOfIterations();
+			int proposalsPerRound = solution.getNumberOfProposals();
+			int[] makespans = solution.getMakespans();
+			StringBuffer makespansString = new StringBuffer();
+			makespansString.append("(");
+			for (int i = 0; i < numOfRes; i++) {
+				makespansString.append(" " + makespans[i]);
+			}
+			makespansString.append(" )");
+			String updateRule = solution.getUpdateRule();
+
+			// Write the data of the solution in the file
+			outputString.append(projectName + ";" + numberOfJobs + ";" + bestAgent1 + ";" + bestAgent2 + ";" + bestSum + ";" + ampSolution_end + ";" + ampSolution_start + ";" + deviation + ";"
+					+ votingAlgo + ";" + proposalAlgo + ";" + negotiationRounds + ";" + proposalsPerRound + ";" + makespansString.toString() + ";" + updateRule + "\n");
+			fileWriter.append(outputString);
+			fileWriter.flush();
+
+			fileWriter.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return outputString.toString();
+	}
+
+	/**
+	 * The method dumps the solution data into the database
+	 * 
+	 * @param solution
+	 *            the solution object of the negotiation
+	 */
+	public void dumpData(SolutionData solution) {
+		Connection connection = null;
+		try {
+			loadDriver(); // load the JDBC driver
+			connection = getUserConnection();
+
+			// Get the data of the solution
+			// Convert the double values in a printable form
+			int numberOfResources = 4;
+			int numberOfJobs = solution.getNumOfJobs();
+			String projectName = solution.getProjectName();
+			double bestAgent1 = solution.getBestSolutionOneAgent1();
+			double bestAgent2 = solution.getBestSolutionOneAgent2();
+			double bestSumValue = solution.getBestSolutionMultiAgent();
+			double ampSolutionValue_start = solution.getSolutionAMP_start();
+			double ampSolutionValue_end = solution.getSolutionAMP_end();
+			double deviationValue = (bestSumValue - ampSolutionValue_end) / ampSolutionValue_end;
+			String votingAlgo = solution.getVotingAlgorithm().toString();
+			String proposalAlgo = solution.getProposalGeneratorAlgorithm();
+			int negotiationRounds = solution.getNumberOfIterations();
+			int proposalsPerRound = solution.getNumberOfProposals();
+			int[] makespans = solution.getMakespans();
+			StringBuffer makespansString = new StringBuffer();
+			makespansString.append("(");
+			for (int i = 0; i < numberOfResources; i++) {
+				makespansString.append(" " + makespans[i]);
+			}
+			makespansString.append(" )");
+
+			// Now enter the project name in the solution table
+			int id = 1; // ID is auto generated, we only need a dummy
+			StringBuffer queryBuffer = new StringBuffer();
+			queryBuffer
+					.append("INSERT INTO Evaluation (Id, Instance, NumberOfJobs, NumberOfRes, BestAgent1, BestAgent2, BestSum, AMPSolution, AmpStartvalue, Deviation, VotingAlgo, ProposalGeneratorAlgo, Rounds, Proposals, Makespans) VALUES (");
+			queryBuffer.append(id);
+			queryBuffer.append(",'");
+			queryBuffer.append(projectName);
+			queryBuffer.append("',");
+			queryBuffer.append(numberOfJobs);
+			queryBuffer.append(",");
+			queryBuffer.append(numberOfResources);
+			queryBuffer.append(",");
+			queryBuffer.append(bestAgent1);
+			queryBuffer.append(",");
+			queryBuffer.append(bestAgent2);
+			queryBuffer.append(",");
+			queryBuffer.append(bestSumValue);
+			queryBuffer.append(",");
+			queryBuffer.append(ampSolutionValue_end);
+			queryBuffer.append(",");
+			queryBuffer.append(ampSolutionValue_start);
+			queryBuffer.append(",");
+			queryBuffer.append(deviationValue);
+			queryBuffer.append(",'");
+			queryBuffer.append(votingAlgo);
+			queryBuffer.append("','");
+			queryBuffer.append(proposalAlgo);
+			queryBuffer.append("',");
+			queryBuffer.append(negotiationRounds);
+			queryBuffer.append(",");
+			queryBuffer.append(proposalsPerRound);
+			queryBuffer.append(",'");
+			queryBuffer.append(makespansString.toString());
+			queryBuffer.append("'");
+			queryBuffer.append(")");
+
+			System.out.println("Query: " + queryBuffer.toString());
+
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(queryBuffer.toString());
+			connection.commit();
+			connection.setAutoCommit(true);
+		} catch (SQLException e) {
+			// handle any errors
+			System.out.println("SQLException: " + e.getMessage());
+			System.out.println("SQLState: " + e.getSQLState());
+			System.out.println("VendorError: " + e.getErrorCode());
+			e.printStackTrace();
+		} finally {
+			if (null != connection) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * The method returns the connection to the database
+	 * 
+	 * @return the connection object
+	 * @throws SQLException
+	 */
+	private Connection getUserConnection() throws SQLException {
+		String username = "st2sopro";
+		String password = "#st2sopro23;";
+
+		Connection connection = DriverManager.getConnection("jdbc:mysql://83.169.19.199:3306/mysql/sopro", username, password);
+
+		return connection;
+	}
+
+	/**
+	 * The method loads the JDBC driver
+	 */
+	private void loadDriver() {
+		try {
+			// TODO ET: we don't need to create the instance here, because the
+			// driver is already loaded into the JVM
+			Driver sqlDriver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+			DriverManager.registerDriver(sqlDriver);
+			System.out.println("Driver successfully loaded.");
+		} catch (ClassNotFoundException e) {
+			System.out.println("Driver could not be loaded.");
+		} catch (InstantiationException e) {
+			System.out.println("Instantiation Exception of the driver.");
+		} catch (IllegalAccessException e) {
+			System.out.println("Illegal Access Exception of the driver.");
+		} catch (SQLException e) {
+			System.out.println("Register Driver error.");
+		}
+	}
+}

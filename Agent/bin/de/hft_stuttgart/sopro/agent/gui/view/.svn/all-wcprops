@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/934/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view
+END
+MediatorView.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/892/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/MediatorView.java
+END
+ProjectView.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/916/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/ProjectView.java
+END
+IView.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/627/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/IView.java
+END
+AddMediatorView.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/755/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/AddMediatorView.java
+END
+ResultView.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/897/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/ResultView.java
+END
+NegotiationView.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/934/branches/Agent/src/de/hft_stuttgart/sopro/agent/gui/view/NegotiationView.java
+END

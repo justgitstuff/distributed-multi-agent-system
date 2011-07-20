@@ -1,0 +1,98 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-13 15:29:38 +0100 (Fr, 13 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/Agent/src/de/hft_stuttgart/sopro/agent/IAgent.java $ $Id:
+ * IAgent.java 339 2009-11-13 14:29:38Z annemarie $
+ */
+package de.hft_stuttgart.sopro.agent;
+
+import java.util.List;
+
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.proposal.IProposal;
+import de.hft_stuttgart.sopro.common.proposal.ProposalComposition;
+import de.hft_stuttgart.sopro.common.voting.VotingAlgorithmEnum;
+
+/**
+ * Main interface for all Agents.
+ * 
+ * @author Eduard Tudenhoefner
+ */
+public interface IAgent {
+
+	/**
+	 * The method sets the payments in all the jobs of the agent
+	 * 
+	 * @param payments
+	 *            the list which contains a payment value for each job of a
+	 *            project
+	 */
+	public void setPaymentData(List<Double> payments);
+
+	/**
+	 * The method sets the voting algorithm which is used for the negotiation
+	 * 
+	 * @param votingAlgoEnum
+	 *            the enum of the algorithm which should be used
+	 */
+	public void setVotingAlgorithm(VotingAlgorithmEnum votingAlgoEnum);
+
+	/**
+	 * @return the id of the agent
+	 */
+	public int getAgentId();
+
+	/**
+	 * @param agentId
+	 *            the id of an agent (unique in one session)
+	 */
+	public void setAgentId(int agentId);
+
+	/**
+	 * @return the interestRate
+	 */
+	public double getInterestRate();
+
+	/**
+	 * @param interestRate
+	 *            the interestRate to set
+	 */
+	public void setInterestRate(double interestRate);
+
+	/**
+	 * The method evaluates the given proposals in relation to the total cash
+	 * value.
+	 * 
+	 * @param proposalComposition
+	 *            the proposals of one iteration which should be evaluated.
+	 * @return the evaluation points for the given proposal composition
+	 */
+	public List<Integer> performVoting(ProposalComposition proposalComposition);
+
+	/**
+	 * @return The current project in which the Agent is participating in.
+	 */
+	public IProject getCurrentProject();
+
+	/**
+	 * Sets the current project in which the Agent should participate in.
+	 * 
+	 * @param currentProject
+	 *            The current project to set.
+	 */
+	public void setCurrentProject(IProject currentProject);
+
+	/**
+	 * @return The winner proposal.
+	 */
+	public IProposal getWinnerProposal();
+
+	/**
+	 * Sets the winner proposal.
+	 * 
+	 * @param winnerProposal
+	 *            The winner proposal to set.
+	 */
+	public void setWinnerProposal(IProposal winnerProposal);
+}

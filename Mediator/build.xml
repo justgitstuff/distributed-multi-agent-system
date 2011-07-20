@@ -1,0 +1,131 @@
+<!--
+	============================================
+		Software Project - Mediator
+	
+	@author Eduard Tudenhoefner - nastra@gmx.net
+	============================================
+-->
+
+<project name="SoPro - Mediator" default="deploy">
+	<property file="build.properties" />
+	<property name="src" value="${basedir}/src" />
+	<property name="build" value="build" />
+	<property name="build.classes" value="${build}/classes" />
+	<property name="build.classes.lib" value="${build.classes}/lib" />
+	<property name="aar.dir" value="${build}/aar" />
+	<property name="lib" value="${basedir}/lib" />
+	<property name="deploy.dir" value="${build}/deploy" />
+	<property name="stubs.dir" value="${build}/stubs" />
+	<property name="common.jar" value="${common.dir}/${common.file}" />
+
+
+	<path id="lib.classpath">
+		<fileset dir="${lib}" includes="**/*.jar, **/*.zip" />
+	</path>
+
+	<path id="complete.classpath">
+		<pathelement location="${build}" />
+		<path refid="lib.classpath" />
+	</path>
+
+	<path id="axis2.classpath">
+		<fileset dir="${axis2.lib}" includes="**/*.jar" />
+	</path>
+
+	<!-- ================================= 
+          target: init              
+         ================================= -->
+	<target name="init" depends="clean" description="creates the structure for the AAR File">
+		<mkdir dir="${build}" />
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${deploy.dir}" />
+		<mkdir dir="${build.classes}/META-INF" />
+		<mkdir dir="${build.classes.lib}" />
+		<mkdir dir="${stubs.dir}" />
+		<copy todir="${build.classes}/META-INF">
+			<fileset dir="${src}">
+				<include name="services.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" depends="" description="cleans the project structure">
+		<delete dir="${build.classes}" />
+		<delete dir="${deploy.dir}" />
+		<delete dir="${stubs.dir}" />
+	</target>
+
+	<!-- ================================= 
+	          target: compile              
+	    ================================= -->
+	<target name="compile" depends="init" description="compiles the sources">
+		<property name="classpath_ref" value="complete.classpath" />
+		<delete file="${lib}/${common.file}" />
+		<copy file="${common.jar}" todir="${lib}" />
+
+		<echo message="${classpath_ref}" />
+		<javac compiler="javac1.5" source="1.5" target="1.5" debug="true" destdir="${build.classes}" srcdir="${src}" classpathref="${classpath_ref}">
+			<compilerarg value="-Xlint" />
+		</javac>
+	</target>
+
+
+	<!-- ================================= 
+          target: create              
+         ================================= -->
+	<target name="create" depends="compile" description="creates the AAR File">
+		<copy todir="${build.classes.lib}">
+			<fileset dir="${lib}" includes="**/*.jar, **/*.zip" />
+		</copy>
+		<jar destfile="${deploy.dir}/${aar.agent.name}">
+			<fileset dir="${build.classes}">
+				<include name="**/*.*" />
+			</fileset>
+		</jar>
+
+		<copy todir="${deploy.dir}">
+			<fileset dir=".">
+				<include name="*.aar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+          target: deploy              
+         ================================= -->
+	<target name="deploy" depends="create" description="deploys the AAR file with all needed libs onto the Tomcat server">
+		<delete file="${tomcat.deploy.dir}/${aar.agent.name}" />
+		<echo message="::Undeploying old service::" />
+		<sleep seconds="10" />
+
+		<echo message="::Deploying new service::" />
+		<copy todir="${tomcat.deploy.dir}">
+			<fileset dir="${deploy.dir}">
+				<include name="*.aar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+		      target: declareAxis2Codegen              
+		 ================================= -->
+	<target name="declareAxis2Codegen" depends="deploy">
+		<taskdef name="wsdl2java" classname="org.apache.axis2.tool.ant.AntCodegenTask" classpathref="axis2.classpath" />
+	</target>
+
+	<!-- ================================= 
+			  target: generateWSStubs              
+		 ================================= -->
+	<target name="generateAndCopyStubs" depends="declareAxis2Codegen" description="generates the stubs out of the service class">
+		<sleep seconds="15" />
+		<!--wsdl2java wsdlfilename="${wsdl.path}" output="${stubs.dir}" packagename="de.hft_stuttgart.sopro.agent.remote" asynconly="false" /-->
+		<wsdl2java wsdlfilename="${wsdl.path}" output="${stubs.dir}" packagename="de.hft_stuttgart.sopro.agent.remote" asynconly="false" unwrap="true" unpackClasses="false" />
+		<!--wsdl2java wsdlfilename="${wsdl.path}" output="${stubs.dir}" packagename="de.hft_stuttgart.sopro.mediator.remote" asynconly="false" serverside="true" generateservicexml="true" /-->
+		<copy todir="${stub.dest.dir}">
+			<fileset dir="${stubs.dir}/src/de/hft_stuttgart/sopro/agent/remote" includes="**/*.java" />
+		</copy>
+	</target>
+</project>

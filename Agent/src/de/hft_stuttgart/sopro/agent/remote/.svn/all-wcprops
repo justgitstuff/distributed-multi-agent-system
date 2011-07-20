@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/remote
+END
+MediatorAgentServiceCallbackHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/remote/MediatorAgentServiceCallbackHandler.java
+END
+MediatorAgentServiceStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/935/branches/Agent/src/de/hft_stuttgart/sopro/agent/remote/MediatorAgentServiceStub.java
+END
+MediatorAgentServiceWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/893/branches/Agent/src/de/hft_stuttgart/sopro/agent/remote/MediatorAgentServiceWrapper.java
+END

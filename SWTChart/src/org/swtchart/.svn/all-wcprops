@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/937/branches/SWTChart/src/org/swtchart
+END
+Chart.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/Chart.java
+END
+ISeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/ISeries.java
+END
+ISeriesLabel.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/688/branches/SWTChart/src/org/swtchart/ISeriesLabel.java
+END
+ILegend.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/ILegend.java
+END
+LineStyle.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/LineStyle.java
+END
+ILineSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/ILineSeries.java
+END
+Constants.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/Constants.java
+END
+IAxis.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IAxis.java
+END
+ISeriesSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/ISeriesSet.java
+END
+IDisposeListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IDisposeListener.java
+END
+IErrorBar.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IErrorBar.java
+END
+IAxisTick.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IAxisTick.java
+END
+IBarSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IBarSeries.java
+END
+IAxisSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IAxisSet.java
+END
+ITitle.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/ITitle.java
+END
+Range.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/Range.java
+END
+IJobSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/915/branches/SWTChart/src/org/swtchart/IJobSeries.java
+END
+IGrid.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/IGrid.java
+END

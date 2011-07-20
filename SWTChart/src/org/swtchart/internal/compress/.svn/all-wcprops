@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress
+END
+CompressConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/CompressConfig.java
+END
+ICompress.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/ICompress.java
+END
+Compress.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/Compress.java
+END
+CompressBarSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/CompressBarSeries.java
+END
+CompressScatterSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/CompressScatterSeries.java
+END
+CompressLineSeries.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/compress/CompressLineSeries.java
+END

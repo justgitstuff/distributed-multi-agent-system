@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/523/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter
+END
+DoubleConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/506/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/DoubleConverter.java
+END
+JobConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/572/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/JobConverter.java
+END
+ProposalConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/549/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/ProposalConverter.java
+END
+ProposalCompositionConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/817/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/ProposalCompositionConverter.java
+END
+ProjectConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/540/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/ProjectConverter.java
+END
+ProjectChanger.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/782/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/converter/ProjectChanger.java
+END

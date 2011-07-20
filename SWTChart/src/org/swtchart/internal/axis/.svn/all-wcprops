@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis
+END
+AxisTick.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/AxisTick.java
+END
+AxisSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/AxisSet.java
+END
+AxisTickLabels.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/AxisTickLabels.java
+END
+Axis.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/Axis.java
+END
+AxisTitle.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/AxisTitle.java
+END
+AxisTickMarks.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/476/branches/SWTChart/src/org/swtchart/internal/axis/AxisTickMarks.java
+END

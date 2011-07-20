@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://tomcat.examer.de:80/Agent/" href="agent_hftproxy.jnlp">
+  <information>
+  <title>Agent</title>
+  <vendor>SoPro Team</vendor>
+  <homepage href="index.html"/>
+  <description>Agent</description>
+  <description kind="short">Agent</description>
+  <shortcut>
+    <desktop/>
+  </shortcut>
+  <icon href="icon.gif" kind="shortcut"/>
+  <icon href="splash.png" kind="splash"/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+" initial-heap-size="128m" max-heap-size="512m"/>
+    <property name="jnlp.http.proxySet" value="true" />
+    <property name="jnlp.http.proxyHost" value="proxy.hft-stuttgart.de" />
+    <property name="jnlp.http.proxyPort" value="80" />
+    <jar href="Agent.jar" main="true"/>
+    <jar href="lib/CommonLayer.jar"/>
+    <extension name="AgentGUILibs" href="agent_gui.jnlp"/>
+    <extension name="AgentSWTLibs" href="agent_nativeswt.jnlp"/>
+  </resources>
+  <application-desc main-class="de.hft_stuttgart.sopro.agent.Main">
+  </application-desc>
+  <update check="always" policy="always"/>
+</jnlp>

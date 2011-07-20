@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/518/branches/Mediator/lib
+END
+CommonLayer.jar
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/853/branches/Mediator/lib/CommonLayer.jar
+END
+mockito-all-1.8.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/500/branches/Mediator/lib/mockito-all-1.8.1.jar
+END
+mysql-connector-java-5.1.10-bin.jar
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/768/branches/Mediator/lib/mysql-connector-java-5.1.10-bin.jar
+END
+axis2-kernel-1.4.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/518/branches/Mediator/lib/axis2-kernel-1.4.1.jar
+END

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/719/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator
+END
+ProposalGeneratorPrimitive.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/837/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorPrimitive.java
+END
+AgentIdGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/261/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/AgentIdGenerator.java
+END
+AbstractIdGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/261/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/AbstractIdGenerator.java
+END
+ProposalGeneratorAdvancedAddition.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/901/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorAdvancedAddition.java
+END
+ProjectIdGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/261/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProjectIdGenerator.java
+END
+ProposalGeneratorAbstract.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/837/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorAbstract.java
+END
+ProposalGeneratorEnum.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/674/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorEnum.java
+END
+ProposalGeneratorModelEnum.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/716/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorModelEnum.java
+END
+ProposalGeneratorFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/679/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/data/generator/ProposalGeneratorFactory.java
+END

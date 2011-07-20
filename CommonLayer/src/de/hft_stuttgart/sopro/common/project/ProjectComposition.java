@@ -1,0 +1,178 @@
+/*
+ * $LastChangedRevision: 421 $ $LastChangedBy: edu $ $LastChangedDate:
+ * 2009-11-08 19:34:06 +0100 (So, 08 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/src/de/hft_stuttgart/sopro/common
+ * /project/ProjectComposition.java $ $Id: ProjectComposition.java 243
+ * 2009-11-08 18:34:06Z edu $
+ */
+package de.hft_stuttgart.sopro.common.project;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.hft_stuttgart.sopro.common.exceptions.AgentIndexOutOfBoundsException;
+import de.hft_stuttgart.sopro.common.exceptions.PaymentDatatNotFoundException;
+import de.hft_stuttgart.sopro.common.exceptions.ProjectNotFoundException;
+
+/**
+ * @author Annemarie Meissner
+ * @author Eduard Tudenhoefner - nastra@gmx.net
+ */
+public class ProjectComposition {
+
+	/**
+	 * The container of Projects
+	 */
+	private List<IProject> projects = new ArrayList<IProject>();
+
+	/**
+	 * The container for the payment data, each project has two payment lists of
+	 * double. The key is the number of jobs of the project.
+	 */
+	private Map<Integer, List<List<Double>>> paymentDataMap = new HashMap<Integer, List<List<Double>>>();
+
+	/**
+	 * The method returns the Project with the specific id
+	 * 
+	 * @param projectId
+	 *            id of the project
+	 * @return Project returns the project with the specific id
+	 * @throws ProjectNotFoundException
+	 */
+	public IProject getProjectById(int projectId) throws ProjectNotFoundException {
+		for (IProject project : projects) {
+			if (project.getProjectId() == projectId) {
+				return project;
+			}
+		}
+
+		// Exception is thrown when there was no project found.
+		throw new ProjectNotFoundException();
+	}
+
+	/**
+	 * The method adds a project to the project composition
+	 * 
+	 * @param project
+	 *            Project which should added to the composition
+	 */
+	public void addProject(IProject project) {
+		projects.add(project);
+	}
+
+	/**
+	 * The method returns the number of Projects in the composition
+	 * 
+	 * @param
+	 * @return returns an integer with the number of Projects in the composition
+	 */
+	public int getNumberOfProjects() {
+		return projects.size();
+	}
+
+	/**
+	 * The method returns the Project which is at the index index in the
+	 * composition
+	 * 
+	 * @param index
+	 *            index of the project in the composition
+	 * @return Project returns the project at the index
+	 * @throws ProjectNotFoundException
+	 */
+	public IProject getProjectByIndex(int index) throws ProjectNotFoundException {
+		if (index >= 0 && index < projects.size()) {
+			return projects.get(index);
+		}
+
+		// Exception is thrown when there is no project found.
+		throw new ProjectNotFoundException();
+	}
+
+	/**
+	 * Returns all available projects.
+	 * 
+	 * @return All available {@link IProject} objects.
+	 */
+	public List<IProject> getProjects() {
+		return projects;
+	}
+
+	/**
+	 * The method sets one of the payment data for a specific project
+	 * 
+	 * @param numberOfJobs
+	 *            the number of jobs of the project for which the payment data
+	 *            should be set
+	 * @param paymentForOneAgent
+	 *            the payment data for one agent
+	 * @param agentIndex
+	 *            the index of the agent for which the payment data should be
+	 *            set
+	 * @throws AgentIndexOutOfBoundsException
+	 *             If the agent index in not zero or one
+	 */
+	public void setPaymentDataOfProject(int numberOfJobs, List<Double> paymentForOneAgent, int agentIndex) throws AgentIndexOutOfBoundsException {
+
+		// If the index is not zero or one --> error only two agents
+		if (agentIndex < 0 || agentIndex > 1) {
+			throw new AgentIndexOutOfBoundsException("The index of the agent can only be 0 or 1.");
+		}
+
+		// Get the paymentData of both agents
+		List<List<Double>> paymentDataBoth = this.paymentDataMap.get(numberOfJobs);
+		// Payment data doesn't exits for projects with this number of jobs -->
+		// create payment data
+		if (paymentDataBoth == null) {
+			paymentDataBoth = new ArrayList<List<Double>>(2);
+			paymentDataBoth.add(new ArrayList<Double>(numberOfJobs));
+			paymentDataBoth.add(new ArrayList<Double>(numberOfJobs));
+		}
+
+		// Set the given payment data now in the paymentdata of both agents
+		paymentDataBoth.set(agentIndex, paymentForOneAgent);
+
+		// Put the changed paymentdata to the map
+		this.paymentDataMap.put(numberOfJobs, paymentDataBoth);
+	}
+
+	/**
+	 * The method returns one of the payment data for a specific project
+	 * 
+	 * @param NumberOfJobs
+	 *            the number of jobs of the project for which the payment data
+	 *            should be set
+	 * @param paymentForOneAgent
+	 *            the payment data for one agent
+	 * @param agentIndex
+	 *            the index of the agent for which the payment data should be
+	 *            set
+	 * @return the List with the payment data for a project
+	 * @throws AgentIndexOutOfBoundsException
+	 *             If the agent index in not zero or one
+	 * @throws PaymentDatatNotFoundException
+	 *             If the payment data for the project with the given number of
+	 *             jobs doesn't exist
+	 */
+	public List<Double> getPaymentDataOfProject(int numberOfJobs, int agentIndex) throws AgentIndexOutOfBoundsException, PaymentDatatNotFoundException {
+		// Get the paymentData of both agents
+		List<List<Double>> paymentDataBoth = this.paymentDataMap.get(numberOfJobs);
+		// Payment data doesn't exits for a project with the given number of
+		// jobs--> create payment data
+		if (paymentDataBoth == null) {
+			throw new PaymentDatatNotFoundException();
+		}
+
+		// If the index is not zero or one --> error only two agents
+		if (agentIndex < 0 || agentIndex >= paymentDataBoth.size()) {
+			throw new AgentIndexOutOfBoundsException("The index of the agent can only be 0, because only one paymentdata is available.");
+		}
+
+		// get the payment of the the given agent index
+		return Collections.unmodifiableList(paymentDataBoth.get(agentIndex));
+	}
+
+}

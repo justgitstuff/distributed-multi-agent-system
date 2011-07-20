@@ -1,0 +1,60 @@
+/*
+ * $LastChangedRevision: 490 $ $LastChangedBy: edu $ $LastChangedDate:
+ * 2009-11-03 20:37:51 +0100 (Di, 03 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/test/de/hft_stuttgart/sopro/common
+ * /data/IdGeneratorTest.java $ $Id: IdGeneratorTest.java 92 2009-11-03
+ * 19:37:51Z sandro $
+ */
+package de.hft_stuttgart.sopro.mediator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
+import de.hft_stuttgart.sopro.mediator.data.generator.AgentIdGenerator;
+import de.hft_stuttgart.sopro.mediator.data.generator.ProjectIdGenerator;
+
+/**
+ * @author sdegiorgi@gmail.com
+ */
+public class IdGeneratorTest {
+
+	/**
+	 * Test to instantiate (pretty needless)
+	 */
+	@Test
+	public void testInstatiate() {
+		ProjectIdGenerator projectIdGenerator = ProjectIdGenerator.getInstance();
+		projectIdGenerator.setId(23);
+		assertNotNull(projectIdGenerator);
+	}
+
+	/**
+	 * Test usage of getNextId()
+	 */
+	@Test
+	public void testUsage() {
+		ProjectIdGenerator projectIdGenerator = ProjectIdGenerator.getInstance();
+		projectIdGenerator.setId(23);
+		projectIdGenerator.getNextId();
+		projectIdGenerator.getNextId();
+		projectIdGenerator.getNextId();
+		projectIdGenerator.getNextId();
+		projectIdGenerator.getNextId();
+		projectIdGenerator.getNextId();
+		assertEquals(30, projectIdGenerator.getNextId());
+		
+		//Create two agent ids
+		AgentIdGenerator  agentIdGen = AgentIdGenerator.getInstance();
+		agentIdGen.setId(5);
+		agentIdGen.getNextId();
+		agentIdGen.getNextId();
+		agentIdGen.getNextId();
+		agentIdGen.getNextId();
+		agentIdGen.getNextId();
+		assertEquals(11, agentIdGen.getNextId());
+	}
+
+}

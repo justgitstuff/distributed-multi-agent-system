@@ -1,0 +1,450 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-02 22:36:11 +0100 (Mo, 02 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/Mediator/src/de/hft_stuttgart/sopro/mediator/Mediator.java $
+ * $Id$
+ */
+package de.hft_stuttgart.sopro.mediator;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.hft_stuttgart.sopro.common.exceptions.AgentIndexOutOfBoundsException;
+import de.hft_stuttgart.sopro.common.exceptions.NotImplementedException;
+import de.hft_stuttgart.sopro.common.exceptions.PaymentDatatNotFoundException;
+import de.hft_stuttgart.sopro.common.exceptions.ProjectNotFoundException;
+import de.hft_stuttgart.sopro.common.exceptions.ResourceNotFoundException;
+import de.hft_stuttgart.sopro.common.project.IProject;
+import de.hft_stuttgart.sopro.common.project.ProjectComposition;
+import de.hft_stuttgart.sopro.common.proposal.ProposalComposition;
+import de.hft_stuttgart.sopro.common.voting.VotingAlgorithmEnum;
+import de.hft_stuttgart.sopro.mediator.converter.ProposalCompositionConverter;
+import de.hft_stuttgart.sopro.mediator.data.DataIO;
+import de.hft_stuttgart.sopro.mediator.data.generator.ProposalGeneratorEnum;
+import de.hft_stuttgart.sopro.mediator.exceptions.GenerateProposalException;
+import de.hft_stuttgart.sopro.mediator.exceptions.ProjectTypeUnknownException;
+import de.hft_stuttgart.sopro.mediator.session.MediationSession;
+import de.hft_stuttgart.sopro.mediator.session.ResourceCleaner;
+
+/**
+ * The singleton Mediator. A reference can be received by calling
+ * {@link #getInstance()}.
+ * 
+ * @author Eduard Tudenhoefner - nastra@gmx.net
+ */
+public class Mediator {
+
+	/**
+	 * The currently available projects.
+	 */
+	private List<IProject> availableProjects;
+
+	/**
+	 * The container for all projects.
+	 */
+	private ProjectComposition projectComposition;
+
+	/**
+	 * The enum for the used proposalGenerator
+	 */
+	private ProposalGeneratorEnum proposalGeneratorEnum = ProposalGeneratorEnum.ADVANCED_ADDITION;
+
+	/**
+	 * The Map containing {@link MediationSession} objects. They key consists of
+	 * the IdentityHashcode of {@link IProject} and the string representation of
+	 * the project name.
+	 * 
+	 * @see System#identityHashCode(Object)
+	 * @see IProject#getProjectName()
+	 */
+	private Map<String, MediationSession> mediationSessionMap = Collections.synchronizedMap(new HashMap<String, MediationSession>());
+
+	/**
+	 * The Mediator instance.
+	 */
+	private static Mediator instance = null;
+
+	static {
+		instance = getInstance();
+		instance.init();
+	}
+
+	/**
+	 * Default constructor which should't be called from outside.
+	 */
+	private Mediator() {
+	}
+
+	/**
+	 * The method where the {@link Mediator} instance can be retrieved from.
+	 * 
+	 * @return A {@link Mediator} instance.
+	 */
+	public static final Mediator getInstance() {
+		if (null == instance) {
+			instance = new Mediator();
+		}
+		return instance;
+	}
+
+	/**
+	 * Initializes the projects using a {@link DataIO} instance.
+	 */
+	private void init() {
+		DataIO dataIO = new DataIO();
+		String filepath = dataIO.getProblemDataPath();
+		this.projectComposition = dataIO.loadAllProblemData(filepath);
+		availableProjects = projectComposition.getProjects();
+		System.out.println("Available projects: " + availableProjects.size());
+	}
+
+	/**
+	 * The method takes the evaluated ProposalComposition of the agent and set
+	 * it in the session
+	 * 
+	 * @param projectId
+	 *            The id of the project for the update of the pheromone matrix.
+	 * @param agentId
+	 *            The id of the agent which set its evaluation points
+	 * @param evaluatedProposals
+	 *            the proposal container which contains now a score for each
+	 *            proposal
+	 */
+	public boolean setProposalsWithScore(int projectId, int agentId, ProposalComposition evaluatedProposals) {
+		try {
+			MediationSession session = this.getSessionOfProject(projectId);
+
+			// Set the evaluated Proposal of one agent to the session and
+			// perform the aggregation
+			session.setProposalsWithScore(evaluatedProposals, agentId);
+			session.performAggregation();
+			return true;
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		} catch (NotImplementedException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * The method takes the evaluated ProposalComposition of the agent and set
+	 * it in the session. The method returns the index of the winner proposal of
+	 * the voting aggregation of the last round in the current
+	 * ProposalComposition for the session with the given projectId.
+	 * 
+	 * @param projectId
+	 *            The id of the project
+	 * @param agentId
+	 *            The id of the agent which set its evaluation points
+	 * @param evaluationPoints
+	 *            the evaluation Points of the current proposals given by the
+	 *            agents voting
+	 * @return True when performing the aggregation was successful.
+	 */
+	public boolean setProposalsEvaluationPoints(int projectId, int agentId, int[] evaluationPoints) {
+		try {
+			// Set the evaluated Proposal of one agent to the session
+			MediationSession session = this.getSessionOfProject(projectId);
+
+			// new proposals are only created if there are still two Agents
+			// negotiating
+			if (null != session && session.getCurrentAgentsOnSession().size() == 2) {
+				// Get the current Proposals of the session
+				ProposalComposition currentProposals = createProposals(projectId, agentId);
+				// Map the evaluation Points to the current Proposals
+				ProposalComposition evaluatedProposals = new ProposalCompositionConverter().mapEvaluationToProposals(currentProposals, evaluationPoints);
+				session.setProposalsWithScore(evaluatedProposals, agentId);
+				session.performAggregation();
+				return true;
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		} catch (NotImplementedException e) {
+			e.printStackTrace();
+		} catch (GenerateProposalException e) {
+			e.printStackTrace();
+		} catch (ResourceNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * Returns all available projects.
+	 * 
+	 * @return All available projects.
+	 */
+	public List<IProject> getAvailableProjects() {
+		return availableProjects;
+	}
+
+	/**
+	 * An Agent can join a project by specifying the projectId to join and its
+	 * agentId.
+	 * 
+	 * @param projectId
+	 *            The id of the project to join.
+	 * @param agentId
+	 *            The id of the agent.
+	 * @param negotiationRounds
+	 *            The number of negotiation rounds.
+	 * @param proposalsPerRound
+	 *            The created proposals per round.
+	 * @param votingAlgorithmEnum
+	 *            The selected {@link VotingAlgorithmEnum}.
+	 * @return true when it was possible to join the project, otherwise false.
+	 */
+	public boolean joinProject(int projectId, int agentId, int negotiationRounds, int proposalsPerRound, VotingAlgorithmEnum votingAlgorithmEnum) {
+		try {
+			// the maximum allowed Agents to join a session
+			int maxAllowedAgents = 2;
+			if (null != projectComposition) {
+				IProject project = projectComposition.getProjectById(projectId);
+				String hashMapKey = System.identityHashCode(project) + project.getProjectName();
+
+				MediationSession session = null;
+				if (project.getCurrentAgentsOnProject().isEmpty()) {
+					// first arriving agent is the creator of the session
+					session = new MediationSession(project, agentId, proposalGeneratorEnum, negotiationRounds, proposalsPerRound);
+					session.setVotingAlgorithm(votingAlgorithmEnum);
+					mediationSessionMap.put(hashMapKey, session);
+					session.addAgentToSession(agentId);
+					return true;
+				} else if (project.getCurrentAgentsOnProject().size() < maxAllowedAgents) {
+					// second arriving agent just joins a previous created
+					// session
+					session = mediationSessionMap.get(hashMapKey);
+					session.addAgentToSession(agentId);
+					return true;
+				} else {
+					// there are exactly two Agents on the session, so joining
+					// the session is not allowed.
+					return false;
+				}
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		} catch (ProjectTypeUnknownException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * Allows an Agent to leave an {@link IProject}.
+	 * 
+	 * @param projectId
+	 *            The project to leave.
+	 * @param agentId
+	 *            The id of the Agent.
+	 * @return True when leaving the project was successful, otherwise false.
+	 */
+	public boolean leaveProject(int projectId, int agentId) {
+		boolean wasSuccessful = false;
+		try {
+			if (null != projectComposition) {
+				IProject project;
+				project = projectComposition.getProjectById(projectId);
+				String hashMapKey = System.identityHashCode(project) + project.getProjectName();
+
+				MediationSession session = null;
+				if (!project.getCurrentAgentsOnProject().isEmpty()) {
+					session = mediationSessionMap.get(hashMapKey);
+					wasSuccessful = session.removeAgentFromSession(agentId);
+
+					// remove the session from the hashmap when the last Agent
+					// leaves the session and kill the session object
+					if (project.getCurrentAgentsOnProject().isEmpty()) {
+						mediationSessionMap.remove(hashMapKey);
+						session = null;
+					}
+				}
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		}
+		return wasSuccessful;
+	}
+
+	/**
+	 * Returns a list of payment data for a project specified by the projectId
+	 * and the agentId.
+	 * 
+	 * @param projectId
+	 *            The id of the project where the payment data should be
+	 *            retrieved from.
+	 * @param agentId
+	 *            The id of the agent.
+	 * @return A list of payment data for a project specified by the projectId
+	 *         and the agentId.
+	 */
+	public List<Double> retrievePaymentDataForProject(int projectId, int agentId) {
+		List<Double> paymentData = null;
+		try {
+			if (null != projectComposition) {
+				// Get the session of the given project
+				MediationSession session = this.getSessionOfProject(projectId);
+				// Get the number of the jobs in the project
+				int numOfJobs = this.projectComposition.getProjectById(projectId).getNumberOfJobs();
+				return projectComposition.getPaymentDataOfProject(numOfJobs, session.getPaymentIndexOfAgent(agentId));
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		} catch (AgentIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		} catch (PaymentDatatNotFoundException e) {
+			e.printStackTrace();
+		}
+		return paymentData;
+	}
+
+	/**
+	 * The method generates the proposal for one project and returns it.
+	 * 
+	 * @param projectId
+	 *            The id of the project for which the proposals are generated
+	 * @param agentId
+	 *            The id of the agent who wants the proposals
+	 * @return the proposals of one iteration
+	 */
+	public ProposalComposition retrieveProposals(int projectId, int agentId) {
+		ProposalComposition proposalComposition = null;
+		try {
+			proposalComposition = createProposals(projectId, agentId);
+		} catch (GenerateProposalException generateProposalException) {
+			generateProposalException.printStackTrace();
+		} catch (ResourceNotFoundException resourceNotFoundException) {
+			resourceNotFoundException.printStackTrace();
+		} catch (ProjectNotFoundException projectNotFoundException) {
+			projectNotFoundException.printStackTrace();
+		}
+		return proposalComposition;
+	}
+
+	/**
+	 * The method generates as much proposals as you want and stores them in the
+	 * {@link ProposalComposition}.
+	 * 
+	 * @param projectId
+	 *            The id of the project to generate the Proposals for.
+	 * @return The container containing the proposals.
+	 * @throws ResourceNotFoundException
+	 *             When the resource was not found.
+	 * @throws GenerateProposalException
+	 *             When the proposals could not be generated.
+	 * @throws ProjectNotFoundException
+	 *             When the project with projectId was not found.
+	 */
+	private ProposalComposition createProposals(int projectId, int agentId) throws GenerateProposalException, ResourceNotFoundException, ProjectNotFoundException {
+		MediationSession session = this.getSessionOfProject(projectId);
+
+		if (null != session) {
+			// create the Proposals for that session
+			return session.retrieveProposals(agentId);
+		}
+		return null;
+	}
+
+	/**
+	 * The method sends the interest rate of a session to the agents
+	 * 
+	 * @param projectId
+	 *            The id of the project for which the interest rate should be
+	 *            sent
+	 * @return the interest rate which is used for the session
+	 */
+	public double sendInterestRate(int projectId) {
+		try {
+			MediationSession session = this.getSessionOfProject(projectId);
+			return session.getInterestRate();
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/**
+	 * The method finds the session which handles the project with the given id
+	 * 
+	 * @param projectId
+	 *            the id of the project for the session
+	 * @return the session which handles the project with the given id
+	 * @throws ProjectNotFoundException
+	 *             When the project was not found.
+	 */
+	private MediationSession getSessionOfProject(int projectId) throws ProjectNotFoundException {
+		if (null != projectComposition) {
+			IProject project = projectComposition.getProjectById(projectId);
+			String hashMapKey = System.identityHashCode(project) + project.getProjectName();
+
+			// Get the session of the project
+			return mediationSessionMap.get(hashMapKey);
+		}
+		throw new ProjectNotFoundException("The project with the id " + projectId + "was not found");
+	}
+
+	/**
+	 * The method returns the index of the winner proposal of the voting
+	 * aggregation of the last round in the current ProposalComposition for the
+	 * session with the given projectId
+	 * 
+	 * @param projectId
+	 *            the id of the project for the session
+	 * @return the winner proposal of the voting aggregation or -1 when the
+	 *         project was not found.
+	 */
+	public int getWinnerProposalsIndexOfLastRound(int projectId) {
+		MediationSession session = null;
+		try {
+			session = this.getSessionOfProject(projectId);
+			if (null != session) {
+				return session.getWinnerProposalIndexOfLastRound();
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	/**
+	 * The method takes the total CashValue of the agent and set it in the
+	 * session. The method should be called only once, after the negotiation.
+	 * 
+	 * @param projectId
+	 *            The id of the project for the update of the pheromone matrix.
+	 * @param agentId
+	 *            The id of the agent which set its total cash value
+	 * @param evaluatedProposals
+	 *            the proposal container which contains now a score for each
+	 *            proposal
+	 */
+	public boolean dumpEvaluationData(int projectId, int agentId, double totalCashValue, double startCashValue) {
+		MediationSession session = null;
+		try {
+			session = this.getSessionOfProject(projectId);
+			if (null != session) {
+				session.setTotalCashValueOfCurrentRound(totalCashValue, startCashValue, agentId);
+
+				// call dump evaluation data of the specific session
+				session.dumpEvaluationData();
+				return true;
+			}
+		} catch (ProjectNotFoundException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * @return The {@link Map} containing all {@link MediationSession}
+	 *         instances. Attention, this method should only be called by the
+	 *         {@link ResourceCleaner}.
+	 */
+	public Map<String, MediationSession> getMediationSessionMap() {
+		return mediationSessionMap;
+	}
+}

@@ -1,0 +1,263 @@
+package de.hft_stuttgart.sopro.agent.gui.view;
+
+import org.eclipse.swt.SWT;
+<<<<<<< .mine
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Color;
+=======
+>>>>>>> .r375
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Slider;
+<<<<<<< .mine
+import org.swtchart.Chart;
+import org.swtchart.ILineSeries;
+import org.swtchart.Range;
+import org.swtchart.ISeries.SeriesType;
+=======
+>>>>>>> .r375
+
+<<<<<<< .mine
+=======
+
+>>>>>>> .r375
+import de.hft_stuttgart.sopro.agent.gui.chart.CapacityPlan;
+import de.hft_stuttgart.sopro.agent.gui.chart.NetworkPlan;
+import de.hft_stuttgart.sopro.agent.gui.chart.TotalCashValueLineChart;
+
+/**
+ * This view will be used to show the user information about the ongoing
+ * negotiation. Therefore charts will be used. A line chart shows the total cash
+ * value over the time. Another charts shows a time schedule for every resource.
+ * Beside that the user gets some information and a network plan of the project.
+ * 
+ * @author Matthias Huber - MatthewHuber@web.de
+ */
+public class NegotiationView {
+
+	/**
+	 * The shell of the user interface.
+	 */
+	private Shell shell;
+
+	/**
+	 * The composite which holds all widgets of the view.
+	 */
+	private Composite composite;
+
+	/**
+	 * The number of columns of the used {@link GridLayout}.
+	 */
+	private static final int numberOfColumns = 10;
+
+	private Slider slider;
+
+	public NegotiationView(Shell shell) {
+		this.shell = shell;
+	}
+
+	public void show() {
+		shell.setSize(1200, 800);
+
+		composite = new Composite(shell, SWT.BORDER);
+		composite.setSize(shell.getSize().x, shell.getSize().y);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = numberOfColumns;
+		gridLayout.makeColumnsEqualWidth = true;
+		composite.setLayout(gridLayout);
+
+		// top left area
+		createTopLeftArea();
+
+		// top right area
+		createTopRightArea();
+
+		// bottom left area
+		createBottomLeftArea();
+
+		// bottom right area
+		createBottomRightArea();
+
+		// *** slider ***/
+		Composite bottom = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.04);
+		gridData.horizontalSpan = numberOfColumns - 1;
+		bottom.setLayout(new GridLayout());
+		bottom.setLayoutData(gridData);
+
+		slider = new Slider(bottom, SWT.HORIZONTAL);
+		slider.setMinimum(0);
+		slider.setMaximum(1000);
+		slider.setSelection(353);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		slider.setLayoutData(gridData);
+
+		// *** round counter ***/
+		Composite counter = new Composite(composite, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.04);
+		counter.setLayout(new GridLayout());
+		counter.setLayoutData(gridData);
+
+		Label counterLabel = new Label(counter, SWT.CENTER);
+		counterLabel.setText("1/1000");
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		counterLabel.setLayoutData(gridData);
+	}
+
+	/**
+	 * Creates the composite including line chart for the total cash value.
+	 */
+	private void createTopLeftArea() {
+		Composite topLeftArea = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.40);
+		gridData.horizontalSpan = numberOfColumns - 5;
+		topLeftArea.setLayout(new FillLayout());
+		topLeftArea.setLayoutData(gridData);
+
+		TotalCashValueLineChart totalCashValue = new TotalCashValueLineChart(topLeftArea);
+		totalCashValue.create();
+	}
+
+<<<<<<< .mine
+		// set titles
+		chart.getTitle().setText("Line Chart Example");
+		chart.getAxisSet().getXAxis(0).getTitle().setText("Rounds");
+		chart.getAxisSet().getYAxis(0).getTitle().setText("Bad $");
+
+		chart.getLegend().setVisible(false);
+
+		list = new ArrayList<Double>();
+		list.add(1.0);
+
+		latestId = "TheRockingOne" + counter;
+		// adjust the axis range
+		// chart.getAxisSet().adjustRange();
+		chart.getAxisSet().getXAxis(0).setRange(new Range(0.0, 100.0));
+		chart.getAxisSet().getYAxis(0).setRange(new Range(0.0, 1.2));
+		chart.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				list.add(Math.random());
+
+				double[] newValues = new double[2];
+				newValues[0] = list.get(list.size() - 2);
+				newValues[1] = list.get(list.size() - 1);
+
+				++counter;
+				ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "TheRockingOne" + counter);
+				if (newValues[0] < newValues[1]) {
+					lineSeries.setLineColor(new Color(Display.getDefault(), 0, 255, 0));
+				} else {
+					lineSeries.setLineColor(new Color(Display.getDefault(), 255, 0, 0));
+				}
+				lineSeries.setYSeries(newValues);
+				double[] xseries = { counter, counter + 1.0 };
+				lineSeries.setXSeries(xseries);
+				latestId = "TheRockingOne" + counter;
+
+				chart.getAxisSet().adjustRange();
+				chart.redraw();
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+		});
+
+		chart.getPlotArea().addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				System.out.println("mouse pressed");
+				if (e.button == 1) {
+					double pointX = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
+					double pointY = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
+					chart.getAxisSet().getXAxis(0).zoomIn(pointX);
+					chart.getAxisSet().getYAxis(0).zoomIn(pointY);
+				} else if (e.button == 3) {
+					double pointX = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
+					double pointY = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
+					chart.getAxisSet().getXAxis(0).zoomOut(pointX);
+					chart.getAxisSet().getYAxis(0).zoomOut(pointY);
+				} else {
+					chart.getAxisSet().adjustRange();
+				}
+				chart.redraw();
+			}
+
+		});
+
+		// *** top right area ***//
+=======
+	/**
+	 * Creates the composite including the capacity plan.
+	 */
+	private void createTopRightArea() {
+>>>>>>> .r375
+		Composite topRightArea = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.40);
+		gridData.horizontalSpan = numberOfColumns - 5;
+		topRightArea.setLayout(new FillLayout());
+<<<<<<< .mine
+		topRightArea.setLayoutData(gd);
+
+=======
+		topRightArea.setLayoutData(gridData);
+
+>>>>>>> .r375
+		CapacityPlan capacityplan = new CapacityPlan(topRightArea);
+		capacityplan.create();
+
+	}
+
+	/**
+	 * Creates the composite including the project information.
+	 */
+	private void createBottomLeftArea() {
+		Composite bottomLeftArea = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.49);
+		gridData.horizontalSpan = numberOfColumns - 8;
+		bottomLeftArea.setLayout(new FillLayout());
+		bottomLeftArea.setLayoutData(gridData);
+
+		Label informations = new Label(bottomLeftArea, SWT.NONE);
+		informations.setText("Informations");
+	}
+
+	/**
+	 * Creates the composite including the network plan.
+	 */
+	private void createBottomRightArea() {
+		Composite bottomRightArea = new Composite(composite, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = (int) (composite.getClientArea().height * 0.49);
+		gridData.horizontalSpan = numberOfColumns - 2;
+		bottomRightArea.setLayout(new FillLayout());
+		bottomRightArea.setLayoutData(gridData);
+
+		NetworkPlan networkPlan = new NetworkPlan(bottomRightArea);
+		networkPlan.create();
+	}
+}

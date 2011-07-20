@@ -1,0 +1,53 @@
+/*
+ * $LastChangedRevision$ $LastChangedBy$ $LastChangedDate:
+ * 2009-11-02 17:52:59 +0100 (Mo, 02 Nov 2009) $ $HeadURL:
+ * http://sopro.examer.de
+ * /svn/branches/CommonLayer/src/de/hft_stuttgart/sopro/common
+ * /voting/algorithms/IVotingAlgorithm.java $ $Id: IVotingAlgorithm.java 52
+ * 2009-11-02 16:52:59Z sandro $
+ */
+package de.hft_stuttgart.sopro.common.voting.algorithms;
+
+import java.util.List;
+
+import de.hft_stuttgart.sopro.common.exceptions.PerformAggregationException;
+import de.hft_stuttgart.sopro.common.proposal.ProposalComposition;
+
+/**
+ * Main interface for the voting algorithms.
+ * 
+ * @author Eduard Tudenhoefner
+ */
+public interface IVotingAlgorithm {
+
+	/**
+	 * Performs the voting of the specific algorithm. This voting is done by the
+	 * {@link IAgent}.
+	 * 
+	 * @param bestTotalCashValue
+	 *            the best total cash value which was calculated for a proposal
+	 *            set
+	 * @param totalCashValueAllProposals
+	 *            the total cash value of all proposals which should be evaluated
+	 * @return the points (evaluation) for all proposals in the specific voting
+	 *         algorithm
+	 */
+	public List<Integer> performVoting(double bestTotalCashValue, List<Double> totalCashValueAllProposals);
+
+	/**
+	 * Performs the aggregation of the specific algorithm. This is done by the
+	 * Mediator.
+	 * 
+	 * @param proposalEvaluationAgent1
+	 *            the proposal evaluation of the first agent where each proposal
+	 *            has a point score
+	 * @param proposalEvaluationAgent2
+	 *            the proposal evaluation of the second agent where each
+	 *            proposal has a point score
+	 * @return An instance of {@link ProposalComposition} which contains the
+	 *         winner proposal(s).
+	 */
+	public ProposalComposition performAggregation(ProposalComposition proposalEvaluationAgent1, ProposalComposition proposalEvaluationAgent2) throws PerformAggregationException ;
+
+	public int getWinnerIndexLastRound();
+}

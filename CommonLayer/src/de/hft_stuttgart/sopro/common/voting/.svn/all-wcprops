@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/818/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting
+END
+VotingAlgorithmEnum.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/55/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/VotingAlgorithmEnum.java
+END
+VotingAlgorithmFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/473/branches/CommonLayer/src/de/hft_stuttgart/sopro/common/voting/VotingAlgorithmFactory.java
+END

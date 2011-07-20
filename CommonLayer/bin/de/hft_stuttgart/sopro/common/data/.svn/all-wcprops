@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/500/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data
+END
+ProposalTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/422/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data/ProposalTest.java
+END
+ProjectTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/243/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data/ProjectTest.java
+END
+JobTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/446/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data/JobTest.java
+END
+ProjectCompositionTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/!svn/ver/383/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data/ProjectCompositionTest.java
+END
+AllTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/500/branches/CommonLayer/test/de/hft_stuttgart/sopro/common/data/AllTests.java
+END
